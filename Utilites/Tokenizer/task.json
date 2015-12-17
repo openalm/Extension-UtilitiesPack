@@ -1,0 +1,53 @@
+{
+  "id": "57ee7959-ba10-47a7-8adb-19d032873133",
+  "name": "Tokenizer",
+  "friendlyName": "Tokenizer: Transform file",
+  "description": "Replaces __<variable>__ with the user-defined variables' values",
+  "helpMarkDown": "",
+  "category": "Utility",
+  "visibility": [
+                "Release"
+                ],  
+  "author": "Microsoft Corporation",
+  "version": {
+    "Major": 0,
+    "Minor": 0,
+    "Patch": 1
+  },
+  "demands": [
+  ],
+   "groups": [
+    {
+      "name": "advanced",
+      "displayName": "Advanced",
+      "isExpanded": false
+    }
+    ],
+	
+	"inputs": [
+    {
+      "name": "SourcePath",
+      "type": "string",
+      "label": "Source filename",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "Source file name that contains the tokens (__<variable-name>__). These patterns will be replaced with user-defined variables."
+    },
+    {
+      "name": "DestinationPath",
+      "type": "string",
+      "label": "Destination filename",
+      "defaultValue": "",
+	    "helpMarkDown": "The destination filename that has tokens replaced by user-defined variables. If this is empty, the 'Source filename' will be modified inline.",
+      "required": false
+	 }
+  ],
+  "instanceNameFormat": "Tokenizer: Transform file $SourcePath",
+  "execution": {
+    "Powershell": {
+      "target": "$(currentDirectory)\\token.ps1",
+      "argumentFormat": "",
+      "workingDirectory": "$(currentDirectory)"
+    }
+  }
+}

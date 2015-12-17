@@ -1,0 +1,73 @@
+﻿{
+    "manifestVersion": 1,
+    "id": "utilitytasks",
+    "name": "Release Management Utility tasks",
+    "version": "0.0.1",
+    "publisher": "openalm",
+    "description": "Utility tasks for Release Management",
+    "public": false,
+    "icons": {
+        "default": "images/utilitytasks-logo.png",
+        "large": "images/utilitytasks-logo-large.png"
+    },
+    "categories": [
+        "Build and release"
+    ],
+    "tags": [
+        "utility",
+        "tasks"
+    ],
+	"links": {
+			
+	},
+    "branding": {
+        "color": "#f6f7fb",
+        "theme": "light"
+    },	
+    "screenshots": [
+        {
+            "path": "images/screen1.png"
+        },
+        {
+            "path": "images/screen2.png"
+        },
+        {
+            "path": "images/screen3.png"
+        }
+    ],
+    "content": {
+        "details": {
+            "path": "overview.md"
+        }
+    },
+    "files": [
+      {
+        "path": "Tokenizer"
+      },
+      {
+        "path": "images",
+        "addressable": true
+      }
+    ],
+    "scopes": [
+        "vso.build_execute",
+        "vso.serviceendpoint_manage"
+    ],
+    "targets": [
+        {
+            "id": "Microsoft.VisualStudio.Services"
+        }
+    ],
+    "contributions": [
+        {
+            "id": "task-tokenizer",
+            "type": "ms.vss-distributed-task.task",
+            "targets": [
+                "ms.vss-distributed-task.tasks"
+            ],
+            "properties": {
+                "name": "Tokenizer"
+            }
+        }
+    ]
+}
