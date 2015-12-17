@@ -3,7 +3,7 @@ param (
     [string]$script
 )
 
-Write-Verbose 'Entering sample.ps1'
+Write-Verbose 'Entering task.ps1'
 Write-Verbose 'Current Working Directory is $cwd'
 Write-Verbose "Your script is \n $script"
 
