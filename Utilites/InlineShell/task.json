@@ -1,0 +1,45 @@
+{
+  "id": "10f1f9a1-74b0-47ab-87bf-e3c9c68e8b0d",
+  "name": "InlineShell",
+  "friendlyName": "Inline Shell",
+  "description": "Execute Inline Shell from task",
+  "author": "Harshil Lodhi",
+  "helpMarkDown": "Replace with markdown to show in help",
+  "category": "Utility",
+  "visibility": [
+    "Build",
+    "Release"
+  ],
+  "demands": [],
+  "version": {
+    "Major": "0",
+    "Minor": "2",
+    "Patch": "5"
+  },
+  "minimumAgentVersion": "1.83.0",
+  "instanceNameFormat": "Shell Script",
+  "inputs": [
+    {
+      "name": "cwd",
+      "type": "filePath",
+      "label": "Working Directory",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "Current working directory when InlineShell is run."
+    },
+    {
+      "name": "script",
+      "type": "multiLine",
+      "label": "Script",
+      "defaultValue": "echo 'Hello World'",
+      "required": true,
+      "helpMarkDown": "Write your scripts and have fun"
+    }
+  ],
+  "execution": {
+    "Node": {
+      "target": "task.js",
+      "argumentFormat": ""
+    }
+  }
+}
