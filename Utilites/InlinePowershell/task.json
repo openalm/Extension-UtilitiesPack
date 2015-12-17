@@ -1,0 +1,50 @@
+{
+  "id": "4c073640-a478-11e5-a7e5-850fa42c7a74",
+  "name": "InlinePowershell",
+  "friendlyName": "Inline Powershell",
+  "description": "description",
+  "author": "Harshil Lodhi",
+  "helpMarkDown": "Replace with markdown to show in help",
+  "category": "Utility",
+  "visibility": [
+    "Build",
+    "Release"
+  ],
+  "demands": [],
+  "version": {
+    "Major": "0",
+    "Minor": "1",
+    "Patch": "0"
+  },
+  "minimumAgentVersion": "1.83.0",
+  "instanceNameFormat": "Powershell Script",
+  "inputs": [
+    {
+      "name": "cwd",
+      "type": "filePath",
+      "label": "Working Directory",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "Current working directory when InlinePowershell is run."
+    },
+    {
+      "name": "script",
+      "type": "multiLine",
+      "label": "Script",
+      "defaultValue": "Write-Host 'Hello World'",
+      "required": true,
+      "helpMarkDown": "Write your scripts and have fun"
+    }
+  ],
+  "execution": {
+    "Node": {
+      "target": "sample.js",
+      "argumentFormat": ""
+    },
+    "PowerShell": {
+      "target": "$(currentDirectory)\\sample.ps1",
+      "argumentFormat": "",
+      "workingDirectory": "$(currentDirectory)"
+    }
+  }
+}
