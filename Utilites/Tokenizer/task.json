@@ -27,7 +27,7 @@
 	"inputs": [
     {
       "name": "SourcePath",
-      "type": "string",
+      "type": "filePath",
       "label": "Source filename",
       "defaultValue": "",
       "required": true,
