@@ -45,6 +45,18 @@
         "path": "Tokenizer"
       },
       {
+        "path": "Powershell++"
+      },
+      {
+        "path": "Shell++"
+      },
+      {
+        "path": "zip"
+      },
+      {
+        "path": "unzip"
+      },
+      {
         "path": "images",
         "addressable": true
       }
@@ -76,7 +88,7 @@
                 "ms.vss-distributed-task.tasks"
             ],
             "properties": {
-                "name": "Powershellpp"
+                "name": "Powershell++"
             }
         },
         {
@@ -86,7 +98,7 @@
                 "ms.vss-distributed-task.tasks"
             ],
             "properties": {
-                "name": "Shellpp"
+                "name": "Shell++"
             }
         },
         {
