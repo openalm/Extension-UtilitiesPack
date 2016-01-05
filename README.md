@@ -47,3 +47,8 @@ This task lets you write your powershell script inline in the task textbox itsel
 ###Shell++
 This task lets you write your powershell script inline in the task textbox itself.  
 ###Zip & Unzip
+
+
+<br>
+If you wish to publish this as an extension, see documentation here:
+https://www.visualstudio.com/en-us/integrate/extensions/publish/overview
