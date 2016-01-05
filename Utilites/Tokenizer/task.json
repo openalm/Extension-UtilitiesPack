@@ -1,51 +1,60 @@
 {
   "id": "57ee7959-ba10-47a7-8adb-19d032873133",
   "name": "Tokenizer",
-  "friendlyName": "Tokenizer: Transform file",
-  "description": "Replaces __<variable>__ with the user-defined variables' values",
+  "friendlyName": "Tokenize with XPath/Regular expressions",
+  "description": "Replaces __<variable>__ and/or XPath for XML documents with User Defined variables or configuration json document",
   "helpMarkDown": "",
   "category": "Utility",
   "visibility": [
-                "Release"
-                ],  
+    "Release"
+  ],
   "author": "Microsoft Corporation",
   "version": {
-    "Major": 0,
+    "Major": 1,
     "Minor": 0,
-    "Patch": 1
+    "Patch": 0
   },
   "demands": [
   ],
-   "groups": [
-    {
-      "name": "advanced",
-      "displayName": "Advanced",
-      "isExpanded": false
-    }
-    ],
-	
-	"inputs": [
+  
+  "inputs": [
     {
       "name": "SourcePath",
       "type": "filePath",
       "label": "Source filename",
       "defaultValue": "",
       "required": true,
-      "helpMarkDown": "Source file name that contains the tokens (__<variable-name>__). These patterns will be replaced with user-defined variables."
+      "helpMarkDown": "Source file name that contains the tokens (__<variable-name>__). These patterns will be replaced with user-defined variables or from Configuration Json FileName. If it is an XML document, XPaths mentioned in the Configuration JsonFileName will be set as per environment"
     },
     {
       "name": "DestinationPath",
-      "type": "string",
+      "type": "filePath",
       "label": "Destination filename",
       "defaultValue": "",
-	    "helpMarkDown": "The destination filename that has tokens replaced by user-defined variables. If this is empty, the 'Source filename' will be modified inline.",
+      "helpMarkDown": "The destination filename that has transformed Source filename. If this is empty, the 'Source filename' will be modified.",
       "required": false
-	 }
+    },
+    {
+      "name": "ConfigurationJsonFile",
+      "type": "filePath",
+      "label": "Configuration Json filename",
+      "defaultValue": "",
+      "helpMarkDown": "Json file that contains environment specific settings in the form XPath, Attribute, Value and values for user-defined variables.",
+      "required": false
+    },
+    {
+      "name": "CurrentEnvironment",
+      "type": "string",
+      "label": "Current Environment",
+      "defaultValue": "",
+      "helpMarkDown": "Environment settings that need to be used. One can specify $RELEASE_ENVIRONMENTNAME if the configuration is setup with Release Manager Setting",
+      "required": false
+    }
   ],
-  "instanceNameFormat": "Tokenizer: Transform file $SourcePath",
+  "instanceNameFormat": "Tokenizer: Transform Source filename",
   "execution": {
     "Powershell": {
-      "target": "$(currentDirectory)\\token.ps1",
+      "target": "$(currentDirectory)\\tokenize.ps1",
       "argumentFormat": "",
       "workingDirectory": "$(currentDirectory)"
     }
