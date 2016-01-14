@@ -3,7 +3,7 @@
     "id": "utilitytasks",
     "name": "Release Management Utility tasks",
     "version": "0.0.2",
-    "publisher": "kishorebv",
+    "publisher": "openalm",
     "description": "Utility tasks for Release Management",
     "public": false,
     "icons": {
