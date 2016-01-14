@@ -6,12 +6,15 @@ param
     #DestinationFile that will have the transformed $SourceFile, if empty then $SourceFile will be used as $DestinationFile
     [String] [Parameter(Mandatory = $false)] $DestinationFile,
     #ConfigurationJsonFile contains the environment specific configuration values, XPath key value pairs that will be used for XML documents passed as $SourceFile
-    [String] [Parameter(Mandatory = $false)] $ConfigurationJsonFile,
-    #ConfigurationJsonFile has multiple environment sections.
-    [String] [Parameter(Mandatory = $false)] $CurrentEnvironment
+    [String] [Parameter(Mandatory = $false)] $ConfigurationJsonFile
 )
 
 . $PSScriptRoot\Helpers.ps1
+
+#ConfigurationJsonFile has multiple environment sections.
+if (!(Test-Path -Path $RELEASE_ENVIRONMENTNAME)){
+	$CurrentEnvironment=$RELEASE_ENVIRONMENTNAME
+}
 
 if($CurrentEnvironment -eq ''){
     $environmentName="default"

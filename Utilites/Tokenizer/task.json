@@ -41,14 +41,6 @@
       "defaultValue": "",
       "helpMarkDown": "Json file that contains environment specific settings in the form XPath, Attribute, Value and values for user-defined variables.",
       "required": false
-    },
-    {
-      "name": "CurrentEnvironment",
-      "type": "string",
-      "label": "Current Environment",
-      "defaultValue": "",
-      "helpMarkDown": "Environment settings that need to be used. One can specify $RELEASE_ENVIRONMENTNAME if the configuration is setup with Release Manager Setting",
-      "required": false
     }
   ],
   "instanceNameFormat": "Tokenizer: Transform Source filename",
