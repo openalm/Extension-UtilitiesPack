@@ -2,39 +2,33 @@
 param
 (
     #SourceFile that contains environment specific information which needs to be transformed based on the environment
-    [String] [Parameter(Mandatory = $true)][ValidateNotNullorEmpty()] $SourceFile,
-    #DestinationFile that will have the transformed $SourceFile, if empty then $SourceFile will be used as $DestinationFile
-    [String] [Parameter(Mandatory = $false)] $DestinationFile,
-    #ConfigurationJsonFile contains the environment specific configuration values, XPath key value pairs that will be used for XML documents passed as $SourceFile
+    [String] [Parameter(Mandatory = $true)][ValidateNotNullorEmpty()] $SourcePath,
+    #DestinationFile that will have the transformed $SourcePath, if empty then $SourcePath will be used as $DestinationPath
+    [String] [Parameter(Mandatory = $false)] $DestinationPath,
+    #ConfigurationJsonFile contains the environment specific configuration values, XPath key value pairs that will be used for XML documents passed as $SourcePath
     [String] [Parameter(Mandatory = $false)] $ConfigurationJsonFile
 )
 
 . $PSScriptRoot\Helpers.ps1
 
 #ConfigurationJsonFile has multiple environment sections.
-if (!(Test-Path -Path $RELEASE_ENVIRONMENTNAME)){
-	$CurrentEnvironment=$RELEASE_ENVIRONMENTNAME
+$environmentName="default"
+if (Test-Path -Path env:RELEASE_ENVIRONMENTNAME){
+	$environmentName=(get-item env:RELEASE_ENVIRONMENTNAME).value
+}
+Write-Host "Environment:"$environmentName
+# Validate that $SourcePath is a valid path
+if (!(Test-Path -Path $SourcePath)){
+    throw "$SourcePath is not a valid path. Please provide a valid path"
 }
 
-if($CurrentEnvironment -eq ''){
-    $environmentName="default"
-}
-else{
-    $environmentName=$CurrentEnvironment
-}
-
-# Validate that $SourceFile is a valid path
-if (!(Test-Path -Path $SourceFile)){
-    throw "$SourceFile is not a valid path. Please provide a valid path"
-}
-
-# Set $DestinationFile as $SourceFile if it is not passed as input. So, SourceFile gets transformed as DestinationFile
-if($DestinationFile -eq ''){
-    $DestinationFile = $SourceFile
+# Set $DestinationPath as $SourcePath if it is not passed as input. So, SourceFile gets transformed as DestinationFile
+if($DestinationPath -eq ''){
+    $DestinationPath = $SourcePath
 }
 
 # Is SourceFile an XML document
-$SourceIsXml=Test-ValidXmlFile $SourceFile
+$SourceIsXml=Test-ValidXmlFile $SourcePath
 # Is there a valid Configuration Json input provided for modifying configuration
 $Configuration=Get-JsonFromFile $ConfigurationJsonFile
 <#
@@ -45,7 +39,7 @@ $Configuration=Get-JsonFromFile $ConfigurationJsonFile
 if(($SourceIsXml) -and ($Configuration)){
     $keys= $Configuration.$environmentName.ConfigChanges
 
-    $xmlraw=[xml](Get-Content $SourceFile)
+    $xmlraw=[xml](Get-Content $SourcePath)
     ForEach($key in $keys){
         $node=$xmlraw.SelectSingleNode($key.KeyName)
         if($node) {
@@ -57,7 +51,7 @@ if(($SourceIsXml) -and ($Configuration)){
             }
         }
     }
-    $xmlraw.Save($DestinationFile)
+    $xmlraw.Save($DestinationPath)
 
 
 }
@@ -70,8 +64,8 @@ if(($SourceIsXml) -and ($Configuration)){
 $patterns = @()
 $regex = ‘__[A-Za-z0-9._-]*__'
 $matches = @()
-$tempFile = $DestinationFile + '.tmp'
-Copy-Item -Force $DestinationFile $tempFile
+$tempFile = $DestinationPath + '.tmp'
+Copy-Item -Force $DestinationPath $tempFile
 
 $matches = select-string -Path $tempFile -Pattern $regex -AllMatches | % { $_.Matches } | % { $_.Value }
 ForEach($match in $matches)
@@ -100,5 +94,5 @@ ForEach($match in $matches)
 Set-Content $tempFile -Force
 }
 
-Copy-Item -Force $tempFile $DestinationFile
+Copy-Item -Force $tempFile $DestinationPath
 Remove-Item -Force $tempFile
