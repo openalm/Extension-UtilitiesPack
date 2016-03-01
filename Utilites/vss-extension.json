@@ -2,7 +2,7 @@
     "manifestVersion": 1,
     "id": "utilitytasks",
     "name": "Release Management Utility tasks",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "publisher": "openalm",
     "description": "Utility tasks for Release Management",
     "public": false,
