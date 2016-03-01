@@ -24,17 +24,6 @@
         "color": "#f6f7fb",
         "theme": "light"
     },	
-    "screenshots": [
-        {
-            "path": "images/screen1.png"
-        },
-        {
-            "path": "images/screen2.png"
-        },
-        {
-            "path": "images/screen3.png"
-        }
-    ],
     "content": {
         "details": {
             "path": "overview.md"
