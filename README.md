@@ -1,4 +1,4 @@
-![](https://github.com/openalm/Extension-UtilitiesPack/blob/master/Utilites/images/utilitytasks-logo.png)
+![](https://github.com/openalm/Extension-UtilitiesPack/blob/master/Utilites/images/Icon128.png)
 # Task Utilities
 Release Management utility tasks
 
