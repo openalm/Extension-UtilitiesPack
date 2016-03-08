@@ -1,4 +1,4 @@
-![](https://github.com/openalm/Extension-UtilitiesPack/blob/master/Utilites/images/utilitytasks-logo.png)
+![](https://github.com/openalm/Extension-UtilitiesPack/blob/master/Utilites/images/Icon128.png)
 # Task Utilities
 Release Management utility tasks
 
@@ -48,7 +48,4 @@ This task lets you write your powershell script inline in the task textbox itsel
 This task lets you write your powershell script inline in the task textbox itself.  
 ###Zip & Unzip
 
-
 <br>
-If you wish to publish this as an extension, see documentation here:
-https://www.visualstudio.com/en-us/integrate/extensions/publish/overview

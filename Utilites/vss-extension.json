@@ -2,13 +2,13 @@
     "manifestVersion": 1,
     "id": "utilitytasks",
     "name": "Release Management Utility tasks",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "publisher": "openalm",
     "description": "Utility tasks for Release Management",
     "public": false,
     "icons": {
-        "default": "images/utilitytasks-logo.png",
-        "large": "images/utilitytasks-logo-large.png"
+        "default": "images/Icon64.png",
+        "large": "images/Icon512.png"
     },
     "categories": [
         "Build and release"
@@ -24,17 +24,6 @@
         "color": "#f6f7fb",
         "theme": "light"
     },	
-    "screenshots": [
-        {
-            "path": "images/screen1.png"
-        },
-        {
-            "path": "images/screen2.png"
-        },
-        {
-            "path": "images/screen3.png"
-        }
-    ],
     "content": {
         "details": {
             "path": "overview.md"
