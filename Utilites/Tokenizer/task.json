@@ -3,12 +3,12 @@
   "name": "Tokenizer",
   "friendlyName": "Tokenize with XPath/Regular expressions",
   "description": "Replaces __<variable>__ and/or XPath for XML documents with User Defined variables or configuration json document",
-  "helpMarkDown": "",
+  "helpMarkDown": "[More Information](https://github.com/openalm/Extension-UtilitiesPack)",
   "category": "Utility",
   "visibility": [
     "Release"
   ],
-  "author": "Microsoft Corporation",
+  "author": "DevLabsOnline",
   "version": {
     "Major": 1,
     "Minor": 0,
