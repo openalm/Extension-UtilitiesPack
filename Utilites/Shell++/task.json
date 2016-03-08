@@ -3,8 +3,8 @@
   "name": "Shell++",
   "friendlyName": "Shell++",
   "description": "Execute bash script",
-  "author": "Harshil Lodhi",
-  "helpMarkDown": "",
+  "author": "DevLabsOnline",
+  "helpMarkDown": "[More Information](https://github.com/openalm/Extension-UtilitiesPack)",
   "category": "Utility",
   "visibility": [
     "Build",

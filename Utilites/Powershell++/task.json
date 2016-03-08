@@ -3,8 +3,8 @@
   "name": "Powershell++",
   "friendlyName": "Powershell++",
   "description": "Run a PowerShell script or Write your own",
-  "author": "Harshil Lodhi",
-  "helpMarkDown": "",
+  "author": "DevLabsOnline",
+  "helpMarkDown": "[More Information](https://github.com/openalm/Extension-UtilitiesPack)",
   "category": "Utility",
   "visibility": [
     "Build",

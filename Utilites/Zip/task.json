@@ -3,8 +3,8 @@
   "name": "zip",
   "friendlyName": "Zip A Folder",
   "description": "Zip Files and Folder",
-  "author": "Harshil Lodhi",
-  "helpMarkDown": "Replace with markdown to show in help",
+  "author": "DevLabsOnline",
+  "helpMarkDown": "[More Information](https://github.com/openalm/Extension-UtilitiesPack)",
   "category": "Utility",
   "visibility": [
     "Build",

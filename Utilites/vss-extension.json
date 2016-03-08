@@ -3,7 +3,7 @@
     "id": "utilitytasks",
     "name": "Release Management Utility tasks",
     "version": "0.0.3",
-    "publisher": "openalm",
+    "publisher": "devlabsonline",
     "description": "Utility tasks for Release Management",
     "public": false,
     "icons": {
@@ -44,6 +44,9 @@
       },
       {
         "path": "unzip"
+      },
+      {
+        "path": "Rollback"
       },
       {
         "path": "images",
@@ -100,14 +103,24 @@
                 "name": "zip"
             }
         },
-        {
-            "id": "task-unzip",
+      {
+        "id": "task-unzip",
+        "type": "ms.vss-distributed-task.task",
+        "targets": [
+          "ms.vss-distributed-task.tasks"
+        ],
+        "properties": {
+          "name": "unzip"
+        }
+      },
+      {
+            "id": "task-rollback",
             "type": "ms.vss-distributed-task.task",
             "targets": [
                 "ms.vss-distributed-task.tasks"
             ],
             "properties": {
-                "name": "unzip"
+                "name": "Rollback"
             }
         }
     ]

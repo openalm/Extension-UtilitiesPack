@@ -47,5 +47,31 @@ This task lets you write your powershell script inline in the task textbox itsel
 ###Shell++
 This task lets you write your powershell script inline in the task textbox itself.  
 ###Zip & Unzip
+This task lets you create zip files and Unzip archives on a windows agent.  
+###Rollback
+The task is used to enable execution of rollback scripts for the environments. In case of rollback, you would need to know which of the tasks were executed successfully and which of the tasks failed. You would need to undo/fix the changes made to the environment by those tasks only.
+Release does not have pre-defined variables that indicate the status of the tasks executed in the job. That makes using an intelligent rollback script difficult. Rollback task facilitates exactly that. You can author a powershell script for reverting/ fixing the changes done to your environment by the deployment. 
+<br>
+Ensure that **Run always*** control option is enabled for the rollback task, so that the script can get executed when any of the tasks in the job fail.
+<br>
+ "Release_Tasks" environment variable shall be set by the task to make the execution status of each of the tasks in the deployment job available for the powershell script.
+ <br> An example to access the task execution information is as follows.
+ ```
+ try
+{
+    $jsonobject = ConvertFrom-Json $env:Release_Tasks
+}
+catch
+{
+    Write-Verbose -Verbose "Error converting from json"
+    Write-Verbose -Verbose $Error
+}
 
+
+foreach ($task in $jsonobject | Get-Member -MemberType NoteProperty) {    
+    $taskproperty = $jsonobject.$($task.Name) | ConvertFrom-Json
+    Write-Verbose -Verbose "Task $($taskproperty.Name) with rank $($task.Name) has status $($taskproperty.Status)"
+}
+
+ ```
 <br>
