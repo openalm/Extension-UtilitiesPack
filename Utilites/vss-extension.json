@@ -10,6 +10,17 @@
         "default": "images/Icon64.png",
         "large": "images/Icon512.png"
     },
+    "screenshots": [
+    	{
+      		"path": "images/screen1.png"
+    	},
+    	{
+      		"path": "images/screen2.png"
+    	},
+    	{
+      		"path": "images/screen3.png"
+    	}
+    ],
     "categories": [
         "Build and release"
     ],
