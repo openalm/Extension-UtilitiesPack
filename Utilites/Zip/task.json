@@ -3,7 +3,7 @@
   "name": "zip",
   "friendlyName": "Zip A Folder",
   "description": "Zip Files and Folder",
-  "author": "DevLabsOnline",
+  "author": "ms-devlabs",
   "helpMarkDown": "[More Information](https://github.com/openalm/Extension-UtilitiesPack)",
   "category": "Utility",
   "visibility": [

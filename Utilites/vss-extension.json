@@ -2,10 +2,10 @@
     "manifestVersion": 1,
     "id": "utilitytasks",
     "name": "Release Management Utility tasks",
-    "version": "0.0.3",
-    "publisher": "devlabsonline",
+    "version": "0.0.4",
+    "publisher": "ms-devlabs",
     "description": "Utility tasks for Release Management",
-    "public": false,
+    "public": true,
     "icons": {
         "default": "images/Icon64.png",
         "large": "images/Icon512.png"

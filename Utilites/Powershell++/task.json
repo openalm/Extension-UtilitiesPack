@@ -3,7 +3,7 @@
   "name": "Powershell++",
   "friendlyName": "Powershell++",
   "description": "Run a PowerShell script or Write your own",
-  "author": "DevLabsOnline",
+  "author": "ms-devlabs",
   "helpMarkDown": "[More Information](https://github.com/openalm/Extension-UtilitiesPack)",
   "category": "Utility",
   "visibility": [
