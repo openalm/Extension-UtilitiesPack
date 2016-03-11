@@ -2,7 +2,7 @@
     "manifestVersion": 1,
     "id": "utilitytasks",
     "name": "Release Management Utility tasks",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "publisher": "ms-devlabs",
     "description": "Utility tasks for Release Management",
     "public": true,
@@ -15,10 +15,10 @@
       		"path": "images/screen1.png"
     	},
     	{
-      		"path": "images/screen2.png"
+      		"path": "images/screen1.png"
     	},
     	{
-      		"path": "images/screen3.png"
+      		"path": "images/screen1.png"
     	}
     ],
     "categories": [
