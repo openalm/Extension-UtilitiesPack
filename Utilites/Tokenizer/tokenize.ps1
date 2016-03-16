@@ -61,7 +61,6 @@ if(($SourceIsXml) -and ($Configuration)){
             ii.	If the variable is available in the configuration section of json document then replace the token with the vaule from json document
             iii.Or else it ignores the token
 #>
-$patterns = @()
 $regex = '__[A-Za-z0-9._-]*__'
 $matches = @()
 $tempFile = $DestinationPath + '.tmp'
