@@ -108,11 +108,19 @@ if($type -eq "InlineScript")
 	Write-Verbose -Verbose "Invoking $script"
     Invoke-Expression $script
 }
-elseif($type -eq "FilePath" -and (Test-Path $rollbackpowershellfile))
+
+if($type -eq "FilePath")
 {
-    $scriptCommand = "& `"$rollbackpowershellfile`" $additionalarguments" 
-    Write-Verbose -Verbose "Rollback script execution command = $scriptCommand" 
-    Invoke-Expression -Command $scriptCommand
-} 
+	if (Test-Path $rollbackpowershellfile)
+	{
+		$scriptCommand = "& `"$rollbackpowershellfile`" $additionalarguments" 
+		Write-Verbose -Verbose "Rollback script execution command = $scriptCommand" 
+		Invoke-Expression -Command $scriptCommand
+	} 
+	else
+	{
+		Write-Error -Verbose "$rollbackpowershellfile not found"
+	}
+}
 
 Write-Verbose -Verbose "Exitting script runpowershellwithtaskcontext"
