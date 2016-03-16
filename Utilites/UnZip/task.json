@@ -3,7 +3,7 @@
   "name": "unzip",
   "friendlyName": "UnZip A package",
   "description": "UnZip a package",
-  "author": "DevLabsOnline",
+  "author": "ms-devlabs",
   "helpMarkDown": "[More Information](https://github.com/openalm/Extension-UtilitiesPack)",
   "category": "Utility",
   "visibility": [

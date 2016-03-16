@@ -1,10 +1,10 @@
 # Task Utilities
-Release Management utility tasks <br>
-1.**Tokenizer** <br>
-2.**Powershell++** <br>
-3.**Shell++** <br>
-4.**Zip & Unzip** <br>
-5.**Rollback** <br>
+Release Management utility tasks 
+1.**Tokenizer** 
+2.**Powershell++** 
+3.**Shell++** 
+4.**Zip & Unzip** 
+5.**Powershell to rollback** 
 
 ## Details: 
 ###Tokenizer
