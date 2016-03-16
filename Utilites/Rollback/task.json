@@ -1,8 +1,8 @@
 {
   "id": "abc5c778-e949-4435-b156-b00c4ede3fcc",
   "name": "Rollback",
-  "friendlyName": "PowerShell to rollback",
-  "description": "Run rollback powershell script with task execution context",
+  "friendlyName": "Rollback PowerShell",
+    "description": "Run a powershell script to rollback deployments. Task execution context is available in the powershell context for implementing conditional rollback",
   "helpMarkDown": "[More Information](https://github.com/openalm/Extension-UtilitiesPack)",
   "category": "Deploy",
   "visibility": [
@@ -11,18 +11,38 @@
   "author": "ms-devlabs",
   "version": {
     "Major": 1,
-    "Minor": 0,
-    "Patch": 3 
+    "Minor": 1,
+    "Patch": 2 
   },
   "minimumAgentVersion": "1.95.0",
+    "groups": [
+        {
+            "name":"advanced",
+            "displayName":"Advanced",
+            "isExpanded":false
+        }
+    ],
   "inputs": [
+    {
+      "name": "type",
+      "type": "pickList",
+      "label": "Type",
+      "defaultValue": "FilePath",
+      "required": true,
+      "helpMarkDown": "Provide Source for the rollback script. File Path or Inline Script",
+      "options": {
+        "InlineScript": "Inline Script",
+        "FilePath": "File Path"
+        }
+    },
     {
       "name": "rollbackpowershellfile",
       "type": "filePath",
       "label": "Script Path",
       "defaultValue": "",
       "required": true,
-      "helpMarkDown": "Path of the script. Should be fully qualified path or relative to the default working directory. Tasks execution details shall be available in Release_Tasks environment variable."
+      "helpMarkDown": "Path of the script. Should be fully qualified path or relative to the default working directory. Tasks execution details shall be available in Release_Tasks environment variable.",
+      "visibleRule": "type = FilePath"
     },
     {
       "name": "additionalarguments",
@@ -30,10 +50,29 @@
       "label": "Script Arguments",
       "defaultValue": "",
       "required": false,
-      "helpMarkDown": "Additional parameters to pass to PowerShell.  Can be either ordinal or named parameters."
+      "helpMarkDown": "Additional parameters to pass to PowerShell.  Can be either ordinal or named parameters.",
+      "visibleRule": "type = FilePath"
+    },
+    { 
+        "name": "workingFolder", 
+        "type": "filePath", 
+        "label": "Working folder", 
+        "defaultValue":"", 
+        "required":false,
+        "helpMarkDown": "Current working directory when script is run.  Defaults to the folder where the script is located.",
+        "groupName":"advanced"
+    },
+    {
+      "name": "script",
+      "type": "multiLine",
+      "label": "Script",
+      "defaultValue": "Write-Host 'Rollback logic goes here as a powershell script'",
+      "required": true,
+      "helpMarkDown": "Powershell script to perform rollback. Execution is relative to the current working directory. Tasks execution details shall be available in Release_Tasks environment variable.",
+      "visibleRule": "type = InlineScript"
     }
   ],
-  "instanceNameFormat": "Rollback script: $(rollbackpowershellfile)",
+  "instanceNameFormat": "Rollback $(type): $(rollbackpowershellfile)",
   "execution": {
     "PowerShell": {
       "target": "$(currentDirectory)\\Runpowershellwithtaskcontext.ps1",
