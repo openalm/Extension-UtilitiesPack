@@ -45,7 +45,7 @@ In the absence of **Configuration Json filename**, this task finds the pattern: 
 ###PowerShell++
 This task lets you write your powershell script inline in the task textbox itself.  
 ###Shell++
-This task lets you write your powershell script inline in the task textbox itself.  
+This task lets you write your bash script inline in the task textbox itself.  
 ###Zip & Unzip
 
 This task lets you create zip files and Unzip archives on a windows agent.  
