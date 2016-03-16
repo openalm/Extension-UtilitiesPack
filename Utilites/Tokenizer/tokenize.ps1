@@ -62,7 +62,7 @@ if(($SourceIsXml) -and ($Configuration)){
             iii.Or else it ignores the token
 #>
 $patterns = @()
-$regex = ‘__[A-Za-z0-9._-]*__'
+$regex = '__[A-Za-z0-9._-]*__'
 $matches = @()
 $tempFile = $DestinationPath + '.tmp'
 Copy-Item -Force $DestinationPath $tempFile
