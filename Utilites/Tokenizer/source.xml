@@ -1,9 +1,0 @@
-<configuration>
-  <appSettings>
-    <add key="EnableCustomRoles" value="false" blah=""></add>
-    <add key="EnableDetailedSyncLogs" value="false">
-	__SQLCORNAME__ : 
-	__SERVER_SQLWHS_NAME__
-    </add>
-  </appSettings>
-</configuration>
