@@ -15,7 +15,7 @@ Look at [overview.md](Utilites/overview.md) for more details on usage of these t
 
 Please create an issue for any bug/feedback. If you would like to contribute to this extension, you could fork off this repo and submit a pull request.
 
-Some documents that can help you, in this regard:
+Some documents that can help you, in this regard:<br>
 1. [How to write a task for VS Team Services Build/Release task](https://github.com/Microsoft/vso-agent-tasks#writing-tasks)<br>
 2. [How to create and publish an extension](https://www.visualstudio.com/en-us/integrate/extensions/publish/overview)<br>
 3. [Learn about installing npm](https://www.npmjs.com/package/npm)<br>
