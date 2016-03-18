@@ -3,9 +3,9 @@
     "id": "utilitytasks",
     "name": "Release Management Utility tasks",
     "version": "0.1.0",
-    "publisher": "openalm",
+    "publisher": "ms-devlabs",
     "description": "Utility tasks for Release Management",
-    "public": false,
+    "public": true,
     "icons": {
         "default": "images/Icon64.png",
         "large": "images/Icon512.png"
