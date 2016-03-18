@@ -11,7 +11,7 @@
   "author": "ms-devlabs",
   "version": {
     "Major": 1,
-    "Minor": 0,
+    "Minor": 1,
     "Patch": 0
   },
   "demands": [
@@ -28,7 +28,7 @@
     },
     {
       "name": "DestinationPath",
-      "type": "filePath",
+      "type": "string",
       "label": "Destination filename",
       "defaultValue": "",
       "helpMarkDown": "The destination filename that has transformed Source filename. If this is empty, the 'Source filename' will be modified.",
@@ -36,7 +36,7 @@
     },
     {
       "name": "ConfigurationJsonFile",
-      "type": "filePath",
+      "type": "string",
       "label": "Configuration Json filename",
       "defaultValue": "",
       "helpMarkDown": "Json file that contains environment specific settings in the form XPath, Attribute, Value and values for user-defined variables.",

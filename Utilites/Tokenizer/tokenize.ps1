@@ -30,7 +30,10 @@ if($DestinationPath -eq ''){
 # Is SourceFile an XML document
 $SourceIsXml=Test-ValidXmlFile $SourcePath
 # Is there a valid Configuration Json input provided for modifying configuration
-$Configuration=Get-JsonFromFile $ConfigurationJsonFile
+if($ConfigurationJsonFile -ne ''){
+    $Configuration=Get-JsonFromFile $ConfigurationJsonFile
+} 
+
 <#
     Step 1:- if the SourceIsXml and a valid configuration file is provided then 
         Run through all the XPaths in the Json Configuration and update the XML file
