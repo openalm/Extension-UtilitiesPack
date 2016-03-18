@@ -1,6 +1,6 @@
 ![](https://github.com/openalm/Extension-UtilitiesPack/blob/master/Utilites/images/Icon128.png)
 # Task Utilities
-Release Management utility tasks
+[Release Management utility tasks](https://marketplace.visualstudio.com/items?itemName=ms-devlabs.utilitytasks)
 
 This extension contains the following Utility tasks:<br>
 1.Tokenizer <br>
