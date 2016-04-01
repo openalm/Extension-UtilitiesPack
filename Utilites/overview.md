@@ -14,37 +14,41 @@ This task finds the pattern:  **\_\_\<pattern\>\_\_** and replaces the same with
 #### (Optional) Tokenization based on XML / XPath
 If **Configuration Json filename** is provided (optional):
 A configuration Json document is provided as an input that contains a section ConfigChanges to provide KeyName the XPath to identify a particular node in the XML document, Attribute name that needs to be set and Value to be set. And this configuration can be maintained for multiple environments.
-Below is the sample for the Json document that can be provided as input. There can be multiple sections for each <environment>
+Below is the sample for the Json document that can be provided as input. There can be multiple sections for each <environment>.  There can also be a non-environment related set of Config changes.  Its recommended to put tokens here for values, then they will be replaced by the tokenize step with 
+variable values.
 ```
 {
-  "<environment>": {
-    "CustomVariables": {
-    "Variable1": "value1",
-    "Variable2": "value2",
-  },
-    "ConfigChanges": [
+	"<environment>": {
+		"CustomVariables": {
+		"Variable1": "value1",
+		"Variable2": "value2",
+		},
+		"ConfigChanges": [
+			{
+			  "KeyName": "/configuration/appSettings/add[@key='EnableDebugging']",
+			  "Attribute":"value",
+			  "Value":"false"
+			},
+			{
+			  "KeyName":“/configuration/connectionStrings/add[@name='databaseentities']”,
+			  "Attribute": "connectionString",
+			  "value": "Integrated Security=True;Persist Security Info=False;Initial Catalog=DB;Data Source=servername"
+			}
+		]
+	},
+	"ConfigChanges": [
         {
           "KeyName": "/configuration/appSettings/add[@key='ServiceURL']",
           "Attribute":"value",
-          "Value":"https://ServiceURL"
-        },
-        {
-          "KeyName": "/configuration/appSettings/add[@key='EnableDebugging']",
-          "Attribute":"value",
-          "Value":"false"
-        },
-        {
-          "KeyName":“/configuration/connectionStrings/add[@name='databaseentities']”,
-          "Attribute": "connectionString",
-          "value": "Integrated Security=True;Persist Security Info=False;Initial Catalog=DB;Data Source=servername"
+          "Value":"__ServiceUrl__"
         }
-    ]
+	]
 }
 ```
 Below is the list of inputs for the task: 
 **Source filename*** - Source file name that contains the tokens (\_\_<variable-name>\_\_). These patterns will be replaced with user-defined variables or from Configuration Json FileName. If it is an XML document, XPaths mentioned in the Configuration JsonFileName will be set as per environment. 
 **Destination filename** (optional) - Destination filename that has transformed Source filename. If this is empty, the 'Source filename' will be modified. 
-**Configuration Json filename** (optional) - Json file that contains environment specific settings in the form XPath, Attribute, Value and values for user-defined variables. 
+**Configuration Json filename** (optional) - Json file that contains environment and non-environment specific settings in the form XPath, Attribute, Value and values for user-defined variables. 
 Refer above for the schema/format of the Json filename. If this parameter is not specified, then custom variables mentioned against the build/release are used to replace the tokens that match the regular expression \_\_<variable-name>\_\_
 
 
