@@ -21,7 +21,7 @@ $environmentName="default"
 if (Test-Path -Path env:RELEASE_ENVIRONMENTNAME){
 	$environmentName=(get-item env:RELEASE_ENVIRONMENTNAME).value
 }
-Write-Host "Environment:"$environmentName
+Write-Host "Environment: $environmentName"
 # Validate that $SourcePath is a valid path
 Write-Verbose "Validate that SourcePath is a valid path: $SourcePath"
 if (!(Test-Path -Path $SourcePath)){
@@ -57,11 +57,11 @@ if(($SourceIsXml) -and ($Configuration)){
         $node=$xmlraw.SelectSingleNode($key.KeyName)
         if($node) {
             try{
-                Write-Host "Updating " $key.Attribute "of " $key.KeyName ":" $key.Value 
+                Write-Host "Updating $key.Attribute of $key.KeyName: $key.Value"
                 $node.($key.Attribute)=$key.Value
                 }
             catch{
-                Write-Error "Failure while updating " $key.Attribute "of " $key.KeyName ":" $key.Value
+                Write-Error "Failure while updating $key.Attribute of $key.KeyName: $key.Value"
             }
         }
     }
@@ -83,7 +83,7 @@ Copy-Item -Force $DestinationPath $tempFile
 $matches = select-string -Path $tempFile -Pattern $regex -AllMatches | % { $_.Matches } | % { $_.Value }
 ForEach($match in $matches)
 {
-  Write-Host "Updating token '" $match "'" 
+  Write-Host "Updating token '$match'" 
   $matchedItem = $match
   $matchedItem = $matchedItem.Trim('_')
   $matchedItem = $matchedItem -replace '\.','_'
@@ -93,21 +93,15 @@ ForEach($match in $matches)
     try{
         if(Test-Path env:$matchedItem){
             $variableValue=(get-item env:$matchedItem).Value
-            Write-Verbose "Found custom variable '$matchedItem' in build or release definition with value '$variableValue'" 
             }
         else{
             if($Configuration.$environmentName.CustomVariables.$matchedItem){
                 $variableValue=$Configuration.$environmentName.CustomVariables.$matchedItem
-                Write-Verbose "Found variable '$matchedItem' in configuration with value '$variableValue" 
-            }
-            else {
-                Write-Host "No value found for token '" $match "'"
             }
         }
         }
     catch{
         $variableValue=$match
-        Write-Host "Error searching for variable for token '" $match "'"
     }
     $_ -replace $match,$variableValue
   } | 
