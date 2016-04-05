@@ -7,7 +7,7 @@ Release Management utility tasks
 4. **Zip & Unzip** 
 5. **Powershell to rollback** 
 
-## Details: 
+## Details
 ###Tokenizer
 The task is used to tokenize environment specific configuration: 
 #### Tokenization based pattern replacement
