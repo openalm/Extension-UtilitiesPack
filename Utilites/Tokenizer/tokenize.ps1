@@ -75,22 +75,29 @@ ForEach($match in $matches)
   $matchedItem = $match
   $matchedItem = $matchedItem.Trim('_')
   $matchedItem = $matchedItem -replace '\.','_'
+
+  $variableValue = $match
+  try {
+      if (Test-Path env:$matchedItem) {
+          $variableValue = (get-item env:$matchedItem).Value
+          Write-Verbose "Found custom variable '$matchedItem' in build or release definition with value '$variableValue'" 
+      }
+      else {
+          if ($Configuration.$environmentName.CustomVariables.$matchedItem) {
+              $variableValue = $Configuration.$environmentName.CustomVariables.$matchedItem
+              Write-Verbose "Found variable '$matchedItem' in configuration with value '$variableValue" 
+          }
+          else {
+              Write-Host "No value found for token '$match'"
+          }
+      }
+  }
+  catch {
+      Write-Host "Error searching for variable for token '$match'"
+  }
+
   (Get-Content $tempFile) | 
   Foreach-Object {
-    $variableValue=$match
-    try{
-        if(Test-Path env:$matchedItem){
-            $variableValue=(get-item env:$matchedItem).Value
-            }
-        else{
-            if($Configuration.$environmentName.CustomVariables.$matchedItem){
-                $variableValue=$Configuration.$environmentName.CustomVariables.$matchedItem
-            }
-        }
-        }
-    catch{
-        $variableValue=$match
-    }
     $_ -replace $match,$variableValue
   } | 
 Set-Content $tempFile -Force
