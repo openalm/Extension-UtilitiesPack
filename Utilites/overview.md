@@ -42,9 +42,14 @@ Below is the sample for the Json document that can be provided as input. There c
     ]
 }
 ```
+
+#### Parameters
 Below is the list of inputs for the task: 
+
 **Source filename*** - Source file name that contains the tokens (\_\_<variable-name>\_\_). These patterns will be replaced with user-defined variables or from Configuration Json FileName. If it is an XML document, XPaths mentioned in the Configuration JsonFileName will be set as per environment. 
+
 **Destination filename** (optional) - Destination filename that has transformed Source filename. If this is empty, the 'Source filename' will be modified. 
+
 **Configuration Json filename** (optional) - Json file that contains environment specific settings in the form XPath, Attribute, Value and values for user-defined variables. 
 Refer above for the schema/format of the Json filename. If this parameter is not specified, then custom variables mentioned against the build/release are used to replace the tokens that match the regular expression \_\_<variable-name>\_\_
 
