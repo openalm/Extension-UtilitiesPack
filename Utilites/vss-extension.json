@@ -28,8 +28,16 @@
         "utility",
         "tasks"
     ],
-	"links": {
-			
+    "links": {
+        "getstarted": {
+            "uri": "https://github.com/openalm/Extension-UtilitiesPack/blob/master/Utilites/overview.md"
+        },
+        "issues": {
+            "uri": "https://github.com/openalm/Extension-UtilitiesPack/issues"
+        },
+        "repository": {
+            "uri": "https://github.com/openalm/Extension-UtilitiesPack"
+        }
 	},
     "branding": {
         "color": "#f6f7fb",
