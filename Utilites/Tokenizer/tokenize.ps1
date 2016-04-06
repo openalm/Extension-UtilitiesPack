@@ -10,6 +10,8 @@ param
 )
 
 . $PSScriptRoot\Helpers.ps1
+import-module "Microsoft.TeamFoundation.DistributedTask.Task.Internal" 
+import-module "Microsoft.TeamFoundation.DistributedTask.Task.Common" 
 
 #ConfigurationJsonFile has multiple environment sections.
 $environmentName="default"
@@ -75,12 +77,14 @@ ForEach($match in $matches)
   $matchedItem = $match
   $matchedItem = $matchedItem.Trim('_')
   $matchedItem = $matchedItem -replace '\.','_'
-  (Get-Content $tempFile) | 
-  Foreach-Object {
-    $variableValue=$match
+  
+  Write-Host (Get-LocalizedString -Key 'Token {0}...' -ArgumentList $matchedItem) -ForegroundColor Green
+        
+	$variableValue=$match
     try{
         if(Test-Path env:$matchedItem){
-            $variableValue=(get-item env:$matchedItem).Value
+			 $matchedItem = $matchedItem -replace '_','.'
+             $variableValue=Get-TaskVariable $distributedTaskContext $matchedItem			 
             }
         else{
             if($Configuration.$environmentName.CustomVariables.$matchedItem){
@@ -91,6 +95,12 @@ ForEach($match in $matches)
     catch{
         $variableValue=$match
     }
+
+	Write-Host (Get-LocalizedString -Key 'Token Value: {0}...' -ArgumentList $variableValue) -ForegroundColor Green
+  
+  
+  (Get-Content $tempFile) | 
+  Foreach-Object {    
     $_ -replace $match,$variableValue
   } | 
 Set-Content $tempFile -Force
