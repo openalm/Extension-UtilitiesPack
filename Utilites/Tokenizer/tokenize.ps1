@@ -9,6 +9,11 @@ param
     [String] [Parameter(Mandatory = $false)] $ConfigurationJsonFile
 )
 
+Write-Verbose "Entering script tokenize.ps1"
+Write-Verbose "SourcePath = $SourcePath"
+Write-Verbose "DestinationPath = $DestinationPath"
+Write-Verbose "ConfigurationJsonFile = $ConfigurationJsonFile"
+
 . $PSScriptRoot\Helpers.ps1
 import-module "Microsoft.TeamFoundation.DistributedTask.Task.Internal" 
 import-module "Microsoft.TeamFoundation.DistributedTask.Task.Common" 
@@ -18,14 +23,16 @@ $environmentName="default"
 if (Test-Path -Path env:RELEASE_ENVIRONMENTNAME){
 	$environmentName=(get-item env:RELEASE_ENVIRONMENTNAME).value
 }
-Write-Host "Environment:"$environmentName
+Write-Host "Environment: $environmentName"
 # Validate that $SourcePath is a valid path
+Write-Verbose "Validate that SourcePath is a valid path: $SourcePath"
 if (!(Test-Path -Path $SourcePath)){
     throw "$SourcePath is not a valid path. Please provide a valid path"
 }
 
 # Set $DestinationPath as $SourcePath if it is not passed as input. So, SourceFile gets transformed as DestinationFile
 if($DestinationPath -eq ''){
+    Write-Verbose "No DestinationPath passed. Use '$SourcePath' as DestinationPath"
     $DestinationPath = $SourcePath
 }
 
@@ -33,6 +40,7 @@ if($DestinationPath -eq ''){
 $SourceIsXml=Test-ValidXmlFile $SourcePath
 # Is there a valid Configuration Json input provided for modifying configuration
 if($ConfigurationJsonFile -ne ''){
+    Write-Verbose "Using configuration from '$ConfigurationJsonFile'"
     $Configuration=Get-JsonFromFile $ConfigurationJsonFile
 } 
 
@@ -42,6 +50,8 @@ if($ConfigurationJsonFile -ne ''){
 #>
 
 if(($SourceIsXml) -and ($Configuration)){
+    Write-Verbose "'$SourcePath' is a XML file. Apply all configurations from '$ConfigurationJsonFile'"
+
     $keys= $Configuration.$environmentName.ConfigChanges
 
     $xmlraw=[xml](Get-Content $SourcePath)
@@ -49,10 +59,11 @@ if(($SourceIsXml) -and ($Configuration)){
         $node=$xmlraw.SelectSingleNode($key.KeyName)
         if($node) {
             try{
-                Write-Host "Updating " $key.Attribute "of " $key.KeyName ":" $key.Value 
+                Write-Host "Updating $key.Attribute of $key.KeyName: $key.Value"
                 $node.($key.Attribute)=$key.Value
                 }
             catch{
+                Write-Error "Failure while updating $key.Attribute of $key.KeyName: $key.Value"
             }
         }
     }
@@ -74,6 +85,7 @@ Copy-Item -Force $DestinationPath $tempFile
 $matches = select-string -Path $tempFile -Pattern $regex -AllMatches | % { $_.Matches } | % { $_.Value }
 ForEach($match in $matches)
 {
+  Write-Host "Updating token '$match'" 
   $matchedItem = $match
   $matchedItem = $matchedItem.Trim('_')
   $matchedItem = $matchedItem -replace '\.','_'
