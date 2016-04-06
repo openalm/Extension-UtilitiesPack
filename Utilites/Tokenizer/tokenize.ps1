@@ -16,7 +16,6 @@ Write-Verbose "ConfigurationJsonFile = $ConfigurationJsonFile"
 
 . $PSScriptRoot\Helpers.ps1
 import-module "Microsoft.TeamFoundation.DistributedTask.Task.Internal" 
-import-module "Microsoft.TeamFoundation.DistributedTask.Task.Common" 
 
 #ConfigurationJsonFile has multiple environment sections.
 $environmentName="default"
@@ -90,9 +89,7 @@ ForEach($match in $matches)
   $matchedItem = $matchedItem.Trim('_')
   $matchedItem = $matchedItem -replace '\.','_'
   
-  Write-Host (Get-LocalizedString -Key 'Token {0}...' -ArgumentList $matchedItem) -ForegroundColor Green
-        
-	$variableValue=$match
+   $variableValue=$match
     try{
         if(Test-Path env:$matchedItem){
 			 $matchedItem = $matchedItem -replace '_','.'
@@ -106,10 +103,7 @@ ForEach($match in $matches)
         }
     catch{
         $variableValue=$match
-    }
-
-	Write-Host (Get-LocalizedString -Key 'Token Value: {0}...' -ArgumentList $variableValue) -ForegroundColor Green
-  
+    }  
   
   (Get-Content $tempFile) | 
   Foreach-Object {    
