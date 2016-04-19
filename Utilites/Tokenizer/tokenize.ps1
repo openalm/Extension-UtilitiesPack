@@ -77,7 +77,7 @@ if (($SourceIsXml) -and ($Configuration)) {
 $regex = '__[A-Za-z0-9._-]*__'
 $matches = @()
 $tempFile = $DestinationPath + '.tmp'
-Copy-Item -Force $DestinationPath $tempFile
+Copy-Item -Force $SourcePath $tempFile
 
 $matches = select-string -Path $tempFile -Pattern $regex -AllMatches | % { $_.Matches } | % { $_.Value }
 ForEach ($match in $matches) {
