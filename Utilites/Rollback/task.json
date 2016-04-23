@@ -69,7 +69,11 @@
       "defaultValue": "Write-Host 'Rollback logic goes here as a powershell script'",
       "required": true,
       "helpMarkDown": "Powershell script to perform rollback. Execution is relative to the current working directory. Tasks execution details shall be available in Release_Tasks environment variable.",
-      "visibleRule": "type = InlineScript"
+      "visibleRule": "type = InlineScript",
+      "properties": {
+                "resizable": "true",
+                "rows" : "10"
+            }
     }
   ],
   "instanceNameFormat": "Rollback $(type): $(rollbackpowershellfile)",
