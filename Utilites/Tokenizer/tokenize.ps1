@@ -19,7 +19,7 @@ Write-Verbose "ConfigurationJsonFile = $ConfigurationJsonFile"
 #ConfigurationJsonFile has multiple environment sections.
 $environmentName = "default"
 if (Test-Path -Path env:RELEASE_ENVIRONMENTNAME) {
-	$environmentName = (get-item env:RELEASE_ENVIRONMENTNAME).value
+    $environmentName = (get-item env:RELEASE_ENVIRONMENTNAME).value
 }
 Write-Host "Environment: $environmentName"
 
@@ -43,6 +43,10 @@ if ($ConfigurationJsonFile -ne "") {
     $Configuration = Get-JsonFromFile $ConfigurationJsonFile
 } 
 
+# Create a copy of the source file and manipulate it
+$tempFile = $DestinationPath + '.tmp'
+Copy-Item -Force $SourcePath $tempFile -Verbose
+
 <#
     Step 1:- if the SourceIsXml and a valid configuration file is provided then 
         Run through all the XPaths in the Json Configuration and update the XML file
@@ -57,15 +61,15 @@ if (($SourceIsXml) -and ($Configuration)) {
         $node = $xmlraw.SelectSingleNode($key.KeyName)
         if ($node) {
             try {
-                Write-Host "Updating $key.Attribute of $key.KeyName: $key.Value"
+                Write-Host "Updating $($key.Attribute) of $($key.KeyName): $($key.Value)"
                 $node.($key.Attribute) = $key.Value
             }
             catch {
-                Write-Error "Failure while updating $key.Attribute of $key.KeyName: $key.Value"
+                Write-Error "Failure while updating $($key.Attribute) of $($key.KeyName): $($key.Value)"
             }
         }
     }
-    $xmlraw.Save($DestinationPath)
+    $xmlraw.Save($tempFile)
 }
 
 <#
@@ -75,10 +79,6 @@ if (($SourceIsXml) -and ($Configuration)) {
             iii.Or else it ignores the token
 #>
 $regex = '__[A-Za-z0-9._-]*__'
-$matches = @()
-$tempFile = $DestinationPath + '.tmp'
-Copy-Item -Force $SourcePath $tempFile
-
 $matches = select-string -Path $tempFile -Pattern $regex -AllMatches | % { $_.Matches } | % { $_.Value }
 ForEach ($match in $matches) {
   Write-Host "Updating token '$match'" 
