@@ -15,10 +15,10 @@ This task finds the pattern `__<pattern>__` and replaces the same with the value
 #### (Optional) Tokenization based on XML / XPath
 If **Configuration Json filename** is provided (optional):
 A configuration Json document is provided as an input that contains a section ConfigChanges to provide KeyName the XPath to identify a particular node in the XML document, Attribute name that needs to be set and Value to be set. And this configuration can be maintained for multiple environments.
-Below is the sample for the Json document that can be provided as input. There can be multiple sections for each `<environment>`
+Below is the sample for the Json document that can be provided as input. There can be multiple sections for each `<release environment name>`
 ```
 {
-  "<environment>": {
+  "<release environment name>": {
     "CustomVariables": {
     "Variable1": "value1",
     "Variable2": "value2",
@@ -41,6 +41,15 @@ Below is the sample for the Json document that can be provided as input. There c
         }
     ]
 }
+```
+
+If the **Source filename** uses xml namespaces in some nodes, use a generic XPath query in `KeyName`. E.g.
+```
+...
+"ConfigChanges": [
+        {
+          "KeyName": "/*[local-name()='configuration']/*[local-name()='connectionStrings']/*[local-name()='add'][@name='serviceUrl']"
+          ...
 ```
 
 #### Parameters
