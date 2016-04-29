@@ -29,15 +29,18 @@ param (
 )
 # Does file exist?
 if ((Test-Path -Path $jsonFilePath)){
-    try{
+    try {
         $outObject = (Get-Content $jsonFilePath) -join "`n" | ConvertFrom-Json
         return $outObject
     }
-    catch{
+    catch {
+        Write-Host "Error parsing configuration file. Exception message: "
+        Write-Host $_.Exception | Format-List
         return
     }
 }
-else{
+else {
+    Write-Host "Configuration file '$jsonFilePath' not found."
     return
 }
 
