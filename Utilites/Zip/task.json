@@ -18,6 +18,13 @@
   },
   "minimumAgentVersion": "1.83.0",
   "instanceNameFormat": "Zip",
+  "groups": [
+        {
+            "name":"advanced",
+            "displayName":"Advanced",
+            "isExpanded":false
+        }
+    ],
   "inputs": [
     {
       "name": "pathToZipFolder",
@@ -34,6 +41,15 @@
       "defaultValue": "",
       "required": true,
       "helpMarkDown": "Path to the zip file which will be generated"
+    },
+    { 
+        "name": "overwrite", 
+        "type": "boolean", 
+        "label": "Overwrite zip file", 
+        "defaultValue": false, 
+        "required":false,
+        "helpMarkDown": "Overwrites the existing zip file",
+        "groupName":"advanced"
     }
   ],
   "execution": {
