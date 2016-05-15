@@ -1,16 +1,22 @@
 param (
     [string]$pathToZipFolder,
     [string]$pathToZipFile,
-    [Boolean]$overwrite
+    [string]$overwrite
 )
 
 Write-Verbose 'Entering sample.ps1'
 Write-Verbose "pathToZipFolder = $pathToZipFolder"
 Write-Verbose "pathToZipFile = $pathToZipFile"
 Write-Verbose "overwrite = $overwrite"
-# Import the Task.Common dll that has all the cmdlets we need for Build
-# import-module "Microsoft.TeamFoundation.DistributedTask.Task.Common"
+
 Add-Type -A System.IO.Compression.FileSystem
+
+# This is a hack since the agent passes this as a string.
+if($overwrite -eq "true"){
+    $overwrite = $true
+}else{
+    $overwrite = $false
+}
 
 if ($overwrite -and (Test-Path $pathToZipFile)){
     Write-Verbose "Removing the old file"
