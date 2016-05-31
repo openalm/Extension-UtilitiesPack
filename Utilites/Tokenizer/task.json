@@ -6,6 +6,7 @@
   "helpMarkDown": "[More Information](https://github.com/openalm/Extension-UtilitiesPack)",
   "category": "Utility",
   "visibility": [
+    "Build",
     "Release"
   ],
   "author": "ms-devlabs",
