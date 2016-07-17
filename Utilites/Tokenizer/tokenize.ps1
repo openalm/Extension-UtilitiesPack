@@ -98,7 +98,9 @@ ForEach ($match in $matches) {
               Write-Verbose "Found variable '$matchedItem' in configuration with value '$variableValue" 
           }
           else {
-              Write-Host "No value found for token '$match'"              
+              Write-Host "No value found for token '$match'. Setting it to an empty value."
+              # Explicitely set token to empty value if neither environment variable was set nor the value be found in the configuration.
+              $variableValue = [string]::Empty              
           }
       }
   }
