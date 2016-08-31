@@ -45,3 +45,10 @@ else {
 }
 
 }
+
+function ArrayToHash($a)
+{
+    $hash = @{}
+    $a | foreach { $hash[$_.Name] = $_ }
+    return $hash
+}
