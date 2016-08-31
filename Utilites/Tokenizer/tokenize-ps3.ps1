@@ -13,11 +13,17 @@ try {
     Write-Verbose "DestinationPath = $DestinationPath"
     Write-Verbose "ConfigurationJsonFile = $ConfigurationJsonFile"
     
+    $currentPath=Split-Path ((Get-Variable MyInvocation -Scope 0).Value).MyCommand.Path
+    Import-Module "$currentPath\ps_modules\VstsTaskSdk"
+    
+    $allVars =  ArrayToHash (Get-VstsTaskVariableInfo)
+
     #ConfigurationJsonFile has multiple environment sections.
     $environmentName = "default"
     if (Test-Path -Path env:RELEASE_ENVIRONMENTNAME) {
         $environmentName = (get-item env:RELEASE_ENVIRONMENTNAME).value
     }
+
     Write-Host "Environment: $environmentName"
 
     # Validate that $SourcePath is a valid path
@@ -78,36 +84,42 @@ try {
     $regex = '__[A-Za-z0-9._-]*__'
     $matches = select-string -Path $tempFile -Pattern $regex -AllMatches | % { $_.Matches } | % { $_.Value }
     ForEach ($match in $matches) {
-    Write-Host "Updating token '$match'" 
-    $matchedItem = $match
-    $matchedItem = $matchedItem.Trim('_')
-    $matchedItem = $matchedItem -replace '\.','_'
-    
-    $variableValue = $match
-    try {
-        if (Test-Path env:$matchedItem) {
-            $variableValue = (get-item env:$matchedItem).Value
-            Write-Verbose "Found custom variable '$matchedItem' in build or release definition with value '$variableValue'" 
-        }
-        else {
-            if ($Configuration.$environmentName.CustomVariables.$matchedItem) {
-                $variableValue = $Configuration.$environmentName.CustomVariables.$matchedItem
-                Write-Verbose "Found variable '$matchedItem' in configuration with value '$variableValue" 
+        Write-Host "Updating token '$match'" 
+        $matchedItem = $match
+        $matchedItem = $matchedItem.Trim('_')
+        
+        $variableValue = $match
+        try {
+            if ($allVars.ContainsKey($matchedItem)) {
+                $variableValue = $allVars[$matchedItem].Value
+                Write-Verbose "Found custom variable '$matchedItem' in build or release definition" 
+            } else {
+                if ($Configuration.$environmentName.CustomVariables.$matchedItem) {
+                    $variableValue = $Configuration.$environmentName.CustomVariables.$matchedItem
+                    Write-Verbose "Found variable '$matchedItem' in configuration with value '$variableValue" 
+                } else {
+                    # Handling back-compat - earlier we allowed replaced . (dot) with _ and we expected users to have _ while defining key in the CustomVariables section in json
+                    Write-Verbose "This is deprecated"
+                    $matchedItem = $matchedItem -replace '\.','_'
+
+                    if ($Configuration.$environmentName.CustomVariables.$matchedItem) {
+                        $variableValue = $Configuration.$environmentName.CustomVariables.$matchedItem
+                        Write-Verbose "Found variable '$matchedItem' in configuration with value '$variableValue"
+                    } else {
+                        Write-Host "No value found for token '$match'" 
+                    }             
+                }
             }
-            else {
-                Write-Host "No value found for token '$match'"              
-            }
         }
-    }
-    catch {
-        Write-Host "Error searching for variable for token '$match'"
-    }
-    
-    (Get-Content $tempFile) | 
-        Foreach-Object {
-            $_ -replace $match, $variableValue
-        } |
-        Set-Content $tempFile -Force
+        catch {
+            Write-Host "Error searching for variable for token '$match'"
+        }
+        
+        (Get-Content $tempFile) | 
+            Foreach-Object {
+                $_ -replace $match, $variableValue
+            } |
+            Set-Content $tempFile -Force
     }
 
     Copy-Item -Force $tempFile $DestinationPath

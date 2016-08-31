@@ -8,10 +8,15 @@ Describe "Replace token variables" {
         
         $env:INPUT_SOURCEPATH = $srcPath = Join-Path $env:TEMP 'source.txt'
         $env:INPUT_DESTINATIONPATH = $destPath = Join-Path $env:TEMP 'dest.txt'
-        $env:foo = 'I am foo'
-        $env:bar = 'I am bar'
-        $sourceContent = '__foo__ __bar__'
-        $expectedDestinationContent = $env:foo + " " + $env:bar
+        $fooVal = "I am foo"
+        $barVal = "I am bar"
+        $secretVal = "I am secret"
+        Set-VstsTaskVariable -Name foo -Value $fooVal
+        Set-VstsTaskVariable -Name bar -Value $barVal
+        Set-VstsTaskVariable -Name secret -Value $secretVal -Secret
+
+        $sourceContent = '__foo__ __bar__ __secret__'
+        $expectedDestinationContent = $fooVal + " " + $barVal + " " + $secretVal
                 
         try {
             Set-Content -Value $sourceContent -Path $srcPath
@@ -35,17 +40,19 @@ Describe "Replace token variables" {
         $env:RELEASE_ENVIRONMENTNAME = 'Test'
         $foo1val = 'I am foo1'
         $bar1val = 'I am bar1'
+        $foobarVal = 'FOO - BAR'
         $jsonConfigContent = @{
             Test=@{
                 CustomVariables = @{
-                    foo1 = $foo1val
-                    bar1 = $bar1val
+                    "foo1" = $foo1val
+                    "bar1" = $bar1val
+                    "foo_bar" = $foobarVal
                 }
             }
         } | ConvertTo-Json
         
-        $sourceContent = '__foo1__ __bar1__'
-        $expectedDestinationContent = $foo1val + " " + $bar1val
+        $sourceContent = '__foo1__ __bar1__ __foo_bar__ __foo.bar__'
+        $expectedDestinationContent = $foo1val + " " + $bar1val + " " + $foobarVal + " " + $foobarVal
                 
         try {
             Set-Content -Value $sourceContent -Path $srcPath
