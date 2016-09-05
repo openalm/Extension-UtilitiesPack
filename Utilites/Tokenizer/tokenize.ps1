@@ -6,13 +6,16 @@ param
     #DestinationFile that will have the transformed $SourcePath, if empty then $SourcePath will be used as $DestinationPath
     [String] [Parameter(Mandatory = $false)] $DestinationPath,
     #ConfigurationJsonFile contains the environment specific configuration values, XPath key value pairs that will be used for XML documents passed as $SourcePath
-    [String] [Parameter(Mandatory = $false)] $ConfigurationJsonFile
+    [String] [Parameter(Mandatory = $false)] $ConfigurationJsonFile,
+    #Replace undefined values with empty
+    [Boolean] [Parameter(Mandatory = $false)] $ReplaceUndefinedValuesWithEmpty    
 )
 
 Write-Verbose "Entering script tokenize.ps1"
 Write-Verbose "SourcePath = $SourcePath"
 Write-Verbose "DestinationPath = $DestinationPath"
 Write-Verbose "ConfigurationJsonFile = $ConfigurationJsonFile"
+Write-Verbose "ReplaceUndefinedValuesWithEmpty = $ReplaceUndefinedValuesWithEmpty"
 
 . $PSScriptRoot\Helpers.ps1
 
@@ -98,9 +101,12 @@ ForEach ($match in $matches) {
               Write-Verbose "Found variable '$matchedItem' in configuration with value '$variableValue" 
           }
           else {
-              Write-Host "No value found for token '$match'. Setting it to an empty value."
-              # Explicitely set token to empty value if neither environment variable was set nor the value be found in the configuration.
-              $variableValue = [string]::Empty              
+              Write-Host "No value found for token '$match'"
+              if ($ReplaceUndefinedValuesWithEmpty) {
+                  Write-Host "Setting '$match' to an empty value."
+                  # Explicitely set token to empty value if neither environment variable was set nor the value be found in the configuration.
+                  $variableValue = [string]::Empty
+              }
           }
       }
   }
