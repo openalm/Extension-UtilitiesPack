@@ -51,6 +51,19 @@ If the **Source filename** uses xml namespaces in some nodes, use a generic XPat
           "KeyName": "/*[local-name()='configuration']/*[local-name()='connectionStrings']/*[local-name()='add'][@name='serviceUrl']"
           ...
 ```
+Or specify the namespace URL and prefix in the config, e.g.
+
+```
+...
+"ConfigChanges": [
+    {
+        "KeyName": "/configuration/ns:nlog/ns:targets/ns:target[@name='email']",
+        "Attribute": "to",
+        "value": "logs@test.com",
+        "NamespaceUrl": "http://www.nlog-project.org/schemas/NLog.xsd",
+        "NamespacePrefix": "ns"
+    }
+```
 
 #### Parameters
 Below is the list of inputs for the task: 

@@ -58,7 +58,15 @@ if (($SourceIsXml) -and ($Configuration)) {
 
     $xmlraw = [xml](Get-Content $SourcePath)
     ForEach ($key in $keys) {
-        $node = $xmlraw.SelectSingleNode($key.KeyName)
+        # Check for a namespaced element
+        if ($key.NamespaceUrl -And $key.NamespacePrefix) {
+            $ns = New-Object System.Xml.XmlNamespaceManager($xmlraw.NameTable)
+            $ns.AddNamespace($key.NamespacePrefix, $key.NamespaceUrl)
+            $node = $xmlraw.SelectSingleNode($key.KeyName, $ns)
+        } else {
+            $node = $xmlraw.SelectSingleNode($key.KeyName)
+        }
+
         if ($node) {
             try {
                 Write-Host "Updating $($key.Attribute) of $($key.KeyName): $($key.Value)"
