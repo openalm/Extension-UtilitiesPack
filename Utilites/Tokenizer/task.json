@@ -13,7 +13,7 @@
   "version": {
     "Major": 2,
     "Minor": 0,
-    "Patch": 0
+    "Patch": 1
   },
   "demands": [
   ],
@@ -49,7 +49,10 @@
     "Powershell": {
       "target": "$(currentDirectory)\\tokenize.ps1",
       "argumentFormat": "",
-      "workingDirectory": "$(currentDirectory)"
+      "workingDirectory": "$(currentDirectory)",
+      "platforms": [
+                "windows"
+            ]
     },
     "Powershell3": {
       "target": "tokenize-ps3.ps1"
