@@ -1,4 +1,4 @@
-$root = Split-Path -Parent $MyInvocation.MyCommand.Path | Split-Path | Split-Path
+﻿$root = Split-Path -Parent $MyInvocation.MyCommand.Path | Split-Path | Split-Path
 $scriptPath = Join-Path $root "\Utilites\Tokenizer\tokenize-ps3.ps1"
 
 Import-Module (Join-Path $root "\Utilites\Tokenizer\ps_modules\VstsTaskSdk") -ArgumentList @{ NonInteractive = $true }
@@ -64,6 +64,33 @@ Describe "Replace token variables" {
             Remove-Item -Path $srcPath
             Remove-Item -Path $destPath
             Remove-Item -Path $jsonConfigPath
+        }
+    }
+}
+
+Describe "Encoding Test" {
+    It "replaces multiple variables defined as env variables(configuration variables)"{
+        
+        $env:INPUT_SOURCEPATH = $srcPath = Join-Path $env:TEMP 'source.txt'
+        $env:INPUT_DESTINATIONPATH = $destPath = Join-Path $env:TEMP 'dest.txt'
+        $fooVal = "的I am foo的"
+        $barVal = "的I am bar的"
+        $secretVal = "I am secret"
+        Set-VstsTaskVariable -Name foo -Value $fooVal
+        Set-VstsTaskVariable -Name bar -Value $barVal
+        Set-VstsTaskVariable -Name secret -Value $secretVal -Secret
+
+        $sourceContent = '__foo__ __bar__ __secret__'
+        $expectedDestinationContent = $fooVal + " " + $barVal + " " + $secretVal
+                
+        try {
+            Set-Content -Value $sourceContent -Path $srcPath -Encoding "UTF8"
+            Invoke-VstsTaskScript -ScriptBlock { . $scriptPath } 
+            Get-Content -Path $destPath -Encoding "UTF8" | Should Be $expectedDestinationContent    
+        }
+        finally {
+            Remove-Item -Path $srcPath
+            Remove-Item -Path $destPath
         }
     }
 }

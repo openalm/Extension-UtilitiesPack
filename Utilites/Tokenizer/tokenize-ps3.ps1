@@ -47,6 +47,8 @@ try {
     } 
 
     # Create a copy of the source file and manipulate it
+    $encoding = Get-FileEncoding $SourcePath
+    Write-Verbose "Detected Encoding: $encoding"
     $tempFile = $DestinationPath + '.tmp'
     Copy-Item -Force $SourcePath $tempFile -Verbose
 
@@ -59,7 +61,7 @@ try {
 
         $keys = $Configuration.$environmentName.ConfigChanges
 
-        $xmlraw = [xml](Get-Content $SourcePath)
+        $xmlraw = [xml](Get-Content $SourcePath -Encoding $encoding)
         ForEach ($key in $keys) {
             $node = $xmlraw.SelectSingleNode($key.KeyName)
             if ($node) {
@@ -115,11 +117,11 @@ try {
             Write-Host "Error searching for variable for token '$match'"
         }
         
-        (Get-Content $tempFile) | 
+        (Get-Content $tempFile -Encoding $encoding) | 
             Foreach-Object {
                 $_ -replace $match, $variableValue
             } |
-            Set-Content $tempFile -Force
+            Set-Content $tempFile -Encoding $encoding -Force
     }
 
     Copy-Item -Force $tempFile $DestinationPath
