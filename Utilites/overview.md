@@ -11,7 +11,7 @@ Release Management utility tasks
 ###Tokenizer
 The task is used to tokenize environment specific configuration: 
 #### Tokenization based pattern replacement
-This task finds the pattern `__<pattern>__` and replaces the same with the value from the variable with name `<pattern>`. Eg. If you have a variable defined as `foo` with value `bar`, on running this task on a file that contains `__foo__` will be changed to `bar`. 
+This task finds the pattern `__<pattern>__` and replaces the same with the value from the variable with name `<pattern>`. Eg. If you have a variable defined as `foo` with value `bar`, on running this task on a file that contains `__foo__` will be changed to `bar`. The latest version supports replacing secret variables.
 #### (Optional) Tokenization based on XML / XPath
 If **Configuration Json filename** is provided (optional):
 A configuration Json document is provided as an input that contains a section ConfigChanges to provide KeyName the XPath to identify a particular node in the XML document, Attribute name that needs to be set and Value to be set. And this configuration can be maintained for multiple environments.
