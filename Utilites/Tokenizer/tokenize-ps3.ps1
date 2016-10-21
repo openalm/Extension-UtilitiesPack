@@ -7,7 +7,7 @@ try {
     [string]$SourcePath = Get-VstsInput -Name SourcePath
     [string]$DestinationPath = Get-VstsInput -Name DestinationPath
     [string]$ConfigurationJsonFile = Get-VstsInput -Name ConfigurationJsonFile
-    [string]$ReplaceUndefinedValuesWithEmpty = Get-VstsInput -Name ReplaceUndefinedValuesWithEmpty
+    [string]$ReplaceUndefinedValuesWithEmpty = Get-VstsInput -Name ReplaceUndefinedValuesWithEmpty -AsBool
 
     . $PSScriptRoot\Helpers.ps1
     Write-Verbose "Entering script tokenize.ps1"
@@ -122,7 +122,7 @@ try {
                         Write-Verbose "Found variable '$matchedItem' in configuration with value '$variableValue"
                     } else {
                         Write-Host "No value found for token '$match'"
-                        if ($ReplaceUndefinedValuesWithEmpty) {
+                        if ($ReplaceUndefinedValuesWithEmpty -eq $true) {
                             Write-Host "Setting '$match' to an empty value."
                             # Explicitely set token to empty value if neither environment variable was set nor the value be found in the configuration.
                             $variableValue = [string]::Empty                                          

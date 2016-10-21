@@ -94,3 +94,58 @@ Describe "Encoding Test" {
         }
     }
 }
+
+Describe "Not set variables should not get replaced" {
+    It "replaces multiple variables defined as env variables(configuration variables)"{
+        
+        $env:INPUT_SOURCEPATH = $srcPath = Join-Path $env:TEMP 'source.txt'
+        $env:INPUT_DESTINATIONPATH = $destPath = Join-Path $env:TEMP 'dest.txt'
+        $fooVal = "的I am foo的"
+        $barVal = "的I am bar的"
+        $secretVal = "I am secret"
+        Set-VstsTaskVariable -Name foo -Value $fooVal
+        Set-VstsTaskVariable -Name bar -Value $barVal
+        Set-VstsTaskVariable -Name secret -Value $secretVal -Secret
+
+        $sourceContent = '__foo__ __bar__ __secret__ __iamnotset__'
+        $expectedDestinationContent = $fooVal + " " + $barVal + " " + $secretVal + " __iamnotset__"
+                
+        try {
+            Set-Content -Value $sourceContent -Path $srcPath -Encoding "UTF8"
+            Invoke-VstsTaskScript -ScriptBlock { . $scriptPath } 
+            Get-Content -Path $destPath -Encoding "UTF8" | Should Be $expectedDestinationContent    
+        }
+        finally {
+            Remove-Item -Path $srcPath
+            Remove-Item -Path $destPath
+        }
+    }
+}
+
+Describe "Not set variables should get replaced" {
+    It "replaces multiple variables defined as env variables(configuration variables)"{
+        
+        $env:INPUT_SOURCEPATH = $srcPath = Join-Path $env:TEMP 'source.txt'
+        $env:INPUT_DESTINATIONPATH = $destPath = Join-Path $env:TEMP 'dest.txt'
+        $env:INPUT_REPLACEUNDEFINEDVALUESWITHEMPTY = $true
+        $fooVal = "的I am foo的"
+        $barVal = "的I am bar的"
+        $secretVal = "I am secret"
+        Set-VstsTaskVariable -Name foo -Value $fooVal
+        Set-VstsTaskVariable -Name bar -Value $barVal
+        Set-VstsTaskVariable -Name secret -Value $secretVal -Secret
+
+        $sourceContent = '__foo__ __bar__ __secret__ __iamnotset__'
+        $expectedDestinationContent = $fooVal + " " + $barVal + " " + $secretVal + " "
+                
+        try {
+            Set-Content -Value $sourceContent -Path $srcPath -Encoding "UTF8"
+            Invoke-VstsTaskScript -ScriptBlock { . $scriptPath } 
+            Get-Content -Path $destPath -Encoding "UTF8" | Should Be $expectedDestinationContent    
+        }
+        finally {
+            Remove-Item -Path $srcPath
+            Remove-Item -Path $destPath
+        }
+    }
+}
