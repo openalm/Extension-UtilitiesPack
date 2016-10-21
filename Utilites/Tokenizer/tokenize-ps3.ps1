@@ -7,11 +7,14 @@ try {
     [string]$SourcePath = Get-VstsInput -Name SourcePath
     [string]$DestinationPath = Get-VstsInput -Name DestinationPath
     [string]$ConfigurationJsonFile = Get-VstsInput -Name ConfigurationJsonFile
+    [string]$ReplaceUndefinedValuesWithEmpty = Get-VstsInput -Name ReplaceUndefinedValuesWithEmpty
+
     . $PSScriptRoot\Helpers.ps1
     Write-Verbose "Entering script tokenize.ps1"
     Write-Verbose "SourcePath = $SourcePath"
     Write-Verbose "DestinationPath = $DestinationPath"
     Write-Verbose "ConfigurationJsonFile = $ConfigurationJsonFile"
+    Write-Verbose "ReplaceUndefinedValuesWithEmpty = $ReplaceUndefinedValuesWithEmpty"
     
     $currentPath=Split-Path ((Get-Variable MyInvocation -Scope 0).Value).MyCommand.Path
     Import-Module "$currentPath\ps_modules\VstsTaskSdk"

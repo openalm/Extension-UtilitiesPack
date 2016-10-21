@@ -2,7 +2,7 @@
     "manifestVersion": 1,
     "id": "utilitytasks",
     "name": "Release Management Utility tasks",
-    "version": "0.1.5",
+    "version": "0.1.6",
     "publisher": "ms-devlabs",
     "description": "Utility tasks for Release Management",
     "public": true,

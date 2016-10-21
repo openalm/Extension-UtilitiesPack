@@ -8,8 +8,15 @@ param
     #ConfigurationJsonFile contains the environment specific configuration values, XPath key value pairs that will be used for XML documents passed as $SourcePath
     [String] [Parameter(Mandatory = $false)] $ConfigurationJsonFile,
     #Replace undefined values with empty
-    [Boolean] [Parameter(Mandatory = $false)] $ReplaceUndefinedValuesWithEmpty    
+    [Parameter(Mandatory = $false)] $ReplaceUndefinedValuesWithEmpty    
 )
+
+# A hack becoz it doesn't work otherwise
+try {
+  $ReplaceUndefinedValuesWithEmpty = [System.Convert]::ToBoolean($ReplaceUndefinedValuesWithEmpty) 
+} catch [FormatException] {
+  $ReplaceUndefinedValuesWithEmpty = $false
+}
 
 Write-Verbose "Entering script tokenize.ps1"
 Write-Verbose "SourcePath = $SourcePath"
