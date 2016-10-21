@@ -17,7 +17,13 @@
   },
   "demands": [
   ],
-  
+  "groups": [
+    {
+      "name": "advanced",
+      "displayName": "Advanced",
+      "isExpanded": false
+    }
+  ],  
   "inputs": [
     {
       "name": "SourcePath",
@@ -41,6 +47,15 @@
       "label": "Configuration Json filename",
       "defaultValue": "",
       "helpMarkDown": "Json file that contains environment specific settings in the form XPath, Attribute, Value and values for user-defined variables.",
+      "required": false
+    },
+    {
+      "name": "ReplaceUndefinedValuesWithEmpty",
+      "type": "boolean",
+      "label": "Replace undefined values with empty",
+      "defaultValue": false,
+      "groupName": "advanced",
+      "helpMarkDown": "If set tokens will be set to an empty value if neither environment variable was set nor the value be found in the configuration. Otherwise the token will be skipped.",
       "required": false
     }
   ],
