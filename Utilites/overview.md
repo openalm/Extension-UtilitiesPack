@@ -8,7 +8,7 @@ Release Management utility tasks
 5. **Powershell to rollback** 
 
 ## Details
-###Tokenizer
+### Tokenizer
 The task is used to tokenize environment specific configuration: 
 #### Tokenization based pattern replacement
 This task finds the pattern `__<pattern>__` and replaces the same with the value from the variable with name `<pattern>`. Eg. If you have a variable defined as `foo` with value `bar`, on running this task on a file that contains `__foo__` will be changed to `bar`. The latest version supports replacing secret variables.
@@ -18,28 +18,27 @@ A configuration Json document is provided as an input that contains a section Co
 Below is the sample for the Json document that can be provided as input. There can be multiple sections for each `<release environment name>`
 ```
 {
-  "<release environment name>": {
-    "CustomVariables": {
-    "Variable1": "value1",
-    "Variable2": "value2",
-  },
-    "ConfigChanges": [
-        {
-          "KeyName": "/configuration/appSettings/add[@key='ServiceURL']",
-          "Attribute":"value",
-          "Value":"https://ServiceURL"
+    "<release environment name>": {
+        "CustomVariables": {
+            "Variable1": "value1",
+            "Variable2": "value2"
+        },
+        "ConfigChanges": [{
+            "KeyName": "/configuration/appSettings/add[@key='ServiceURL']",
+            "Attribute": "value",
+            "Value": "https://ServiceURL"
         },
         {
-          "KeyName": "/configuration/appSettings/add[@key='EnableDebugging']",
-          "Attribute":"value",
-          "Value":"false"
+            "KeyName": "/configuration/appSettings/add[@key='EnableDebugging']",
+            "Attribute": "value",
+            "Value": "false"
         },
         {
-          "KeyName":“/configuration/connectionStrings/add[@name='databaseentities']”,
-          "Attribute": "connectionString",
-          "value": "Integrated Security=True;Persist Security Info=False;Initial Catalog=DB;Data Source=servername"
-        }
-    ]
+            "KeyName": "/configuration/connectionStrings/add[@name='databaseentities']",
+            "Attribute": "connectionString",
+            "value": "Integrated Security=True;Persist Security Info=False;Initial Catalog=DB;Data Source=servername"
+        }]
+    }
 }
 ```
 
@@ -65,6 +64,42 @@ Or specify the namespace URL and prefix in the config, e.g.
     }
 ```
 
+#### (Optional) Default variables and config changes
+
+To prevent you from having to define variables and config changes for each environment a special **"default"-environment** can be used in the configuration JSON file. Variables and config changes defined in this special environment will be used in every environment that doesn't explicitly overwrite them.
+
+```
+{
+    "default": {
+        "CustomVariables": {
+            "Variable1": "this value is valid in all environments",
+            "ServiceURL": "https://DefaultServiceURL"
+        },
+        "ConfigChanges": [{
+            "KeyName": "/configuration/appSettings/add[@key='ServiceURL']",
+            "Attribute": "value",
+            "Value": "__ServiceURL__"
+        },
+        {
+            "KeyName": "/configuration/appSettings/add[@key='EnableDebugging']",
+            "Attribute": "value",
+            "Value": "true"
+        }]
+    },
+    "test": {},
+    "prod": {
+        "CustomVariables": {
+            "ServiceURL": "https://ProdServiceURL"
+        },
+        "ConfigChanges": [{
+            "KeyName": "/configuration/appSettings/add[@key='EnableDebugging']",
+            "Attribute": "value",
+            "Value": "false"
+        }]
+    }
+}
+```
+
 #### Parameters
 Below is the list of inputs for the task: 
 
@@ -76,13 +111,13 @@ Below is the list of inputs for the task:
 Refer above for the schema/format of the Json filename. If this parameter is not specified, then custom variables mentioned against the build/release are used to replace the tokens that match the regular expression `__<variable-name>__`
 
 
-###PowerShell++
+### PowerShell++
 This task lets you write your powershell script inline in the task textbox itself.  
-###Shell++
+### Shell++
 This task lets you write your powershell script inline in the task textbox itself.  
-###Zip & Unzip
+### Zip & Unzip
 This task lets you create zip files and Unzip archives on a windows agent.  
-###Rollback
+### Rollback
 The task is used to enable execution of rollback scripts for the environments. In case of rollback, you would need to know which of the tasks were executed successfully and which of the tasks failed. You would need to undo/fix the changes made to the environment by those tasks only.
 Release does not have pre-defined variables that indicate the status of the tasks executed in the job. That makes using an intelligent rollback script difficult. Rollback task facilitates exactly that. You can author a powershell script for reverting/ fixing the changes done to your environment by the deployment. 
 

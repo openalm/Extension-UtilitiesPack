@@ -23,8 +23,12 @@ try {
 
     #ConfigurationJsonFile has multiple environment sections.
     $environmentName = "default"
+    $environmentNames = @($environmentName)
     if (Test-Path -Path env:RELEASE_ENVIRONMENTNAME) {
         $environmentName = (get-item env:RELEASE_ENVIRONMENTNAME).value
+        if ($environmentNames -notcontains $environmentName) {
+            $environmentNames += $environmentName
+        }
     }
 
     Write-Host "Environment: $environmentName"
@@ -47,6 +51,7 @@ try {
     if ($ConfigurationJsonFile -ne "") {
         Write-Verbose "Using configuration from '$ConfigurationJsonFile'"
         $Configuration = Get-JsonFromFile $ConfigurationJsonFile
+        $environmentNames = $environmentNames | where { $Configuration.$_ }
     } 
 
     # Create a copy of the source file and manipulate it
@@ -61,33 +66,34 @@ try {
     #>
     if (($SourceIsXml) -and ($Configuration)) {
         Write-Verbose "'$SourcePath' is a XML file. Apply all configurations from '$ConfigurationJsonFile'"
-
-        $keys = $Configuration.$environmentName.ConfigChanges
-
-        $xmlraw = [xml](Get-Content $SourcePath -Encoding $encoding)
-        ForEach ($key in $keys) {
-            # Check for a namespaced element
-            if ($key.NamespaceUrl -And $key.NamespacePrefix) {
-                $ns = New-Object System.Xml.XmlNamespaceManager($xmlraw.NameTable)
-                $ns.AddNamespace($key.NamespacePrefix, $key.NamespaceUrl)
-                $node = $xmlraw.SelectSingleNode($key.KeyName, $ns)
-            } else {
-                $node = $xmlraw.SelectSingleNode($key.KeyName)
-            }
-
-            if ($node) {
-                try {
-                    Write-Host "Updating $($key.Attribute) of $($key.KeyName): $($key.Value)"
-                    $node.($key.Attribute) = $key.Value
+        
+        ForEach ($environmentName in $environmentNames) {
+            $keys = $Configuration.$environmentName.ConfigChanges 
+            $xmlraw = [xml](Get-Content $tempFile -Encoding $encoding)
+            ForEach ($key in $keys) {
+                # Check for a namespaced element
+                if ($key.NamespaceUrl -And $key.NamespacePrefix) {
+                    $ns = New-Object System.Xml.XmlNamespaceManager($xmlraw.NameTable)
+                    $ns.AddNamespace($key.NamespacePrefix, $key.NamespaceUrl)
+                    $node = $xmlraw.SelectSingleNode($key.KeyName, $ns)
+                } else {
+                    $node = $xmlraw.SelectSingleNode($key.KeyName)
                 }
-                catch {
-                    Write-Error "Failure while updating $($key.Attribute) of $($key.KeyName): $($key.Value)"
+    
+                if ($node) {
+                    try {
+                        Write-Host "Updating $($key.Attribute) of $($key.KeyName): $($key.Value)"
+                        $node.($key.Attribute) = $key.Value
+                    }
+                    catch {
+                        Write-Error "Failure while updating $($key.Attribute) of $($key.KeyName): $($key.Value)"
+                    }
+                } else {
+                   Write-Verbose "'$($key.KeyName)' not found in source"
                 }
-            } else {
-               Write-Verbose "'$($key.KeyName)' not found in source"
             }
+            $xmlraw.Save($tempFile)
         }
-        $xmlraw.Save($tempFile)
     }
 
     <#
@@ -107,11 +113,13 @@ try {
         try {
             if ($allVars.ContainsKey($matchedItem)) {
                 $variableValue = $allVars[$matchedItem].Value
-                Write-Verbose "Found custom variable '$matchedItem' in build or release definition" 
+                Write-Verbose "Found custom variable '$matchedItem' in build or release definition with value '$variableValue'"
             } else {
-                if ($Configuration.$environmentName.CustomVariables.$matchedItem) {
-                    $variableValue = $Configuration.$environmentName.CustomVariables.$matchedItem
-                    Write-Verbose "Found variable '$matchedItem' in configuration with value '$variableValue" 
+                # Select the variable value defined in the current environment. Fall back to the value defined in the default environment if the current environment doesn't define it.
+                $environmentVariableValue = $environmentNames | foreach { $Configuration.$_.CustomVariables.$matchedItem } | where { $_ } | select -Last 1
+                if ($environmentVariableValue) {
+                    $variableValue = $environmentVariableValue
+                    Write-Verbose "Found variable '$matchedItem' in configuration with value '$variableValue'"
                 } else {
                     # Handling back-compat - earlier we allowed replaced . (dot) with _ and we expected users to have _ while defining key in the CustomVariables section in json
                     Write-Verbose "This is deprecated"
@@ -125,13 +133,12 @@ try {
                         if ($ReplaceUndefinedValuesWithEmpty -eq $true) {
                             Write-Host "Setting '$match' to an empty value."
                             # Explicitely set token to empty value if neither environment variable was set nor the value be found in the configuration.
-                            $variableValue = [string]::Empty                                          
+                            $variableValue = [string]::Empty
                         }
                     }             
                 }
             }
-        }
-        catch {
+        } catch {
             Write-Host "Error searching for variable for token '$match'"
         }
         

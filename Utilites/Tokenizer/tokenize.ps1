@@ -28,8 +28,12 @@ Write-Verbose "ReplaceUndefinedValuesWithEmpty = $ReplaceUndefinedValuesWithEmpt
 
 #ConfigurationJsonFile has multiple environment sections.
 $environmentName = "default"
+$environmentNames = @($environmentName)
 if (Test-Path -Path env:RELEASE_ENVIRONMENTNAME) {
     $environmentName = (get-item env:RELEASE_ENVIRONMENTNAME).value
+    if ($environmentNames –notcontains $environmentName) {
+        $environmentNames += $environmentName
+    }
 }
 Write-Host "Environment: $environmentName"
 
@@ -51,6 +55,7 @@ $SourceIsXml=Test-ValidXmlFile $SourcePath
 if ($ConfigurationJsonFile -ne "") {
     Write-Verbose "Using configuration from '$ConfigurationJsonFile'"
     $Configuration = Get-JsonFromFile $ConfigurationJsonFile
+    $environmentNames = $environmentNames | where { $Configuration.$_ }
 } 
 
 # Create a copy of the source file and manipulate it
@@ -63,32 +68,36 @@ Copy-Item -Force $SourcePath $tempFile -Verbose
 #>
 if (($SourceIsXml) -and ($Configuration)) {
     Write-Verbose "'$SourcePath' is a XML file. Apply all configurations from '$ConfigurationJsonFile'"
-
-    $keys = $Configuration.$environmentName.ConfigChanges
-
-    $xmlraw = [xml](Get-Content $SourcePath)
-    ForEach ($key in $keys) {
-        # Check for a namespaced element
-        if ($key.NamespaceUrl -And $key.NamespacePrefix) {
-            $ns = New-Object System.Xml.XmlNamespaceManager($xmlraw.NameTable)
-            $ns.AddNamespace($key.NamespacePrefix, $key.NamespaceUrl)
-            $node = $xmlraw.SelectSingleNode($key.KeyName, $ns)
-        } else {
-            $node = $xmlraw.SelectSingleNode($key.KeyName)
-        }
-
-        if ($node) {
-            try {
-                Write-Host "Updating $($key.Attribute) of $($key.KeyName): $($key.Value)"
-                $node.($key.Attribute) = $key.Value
+    
+    ForEach ($environmentName in $environmentNames) {
+        $keys = $Configuration.$environmentName.ConfigChanges
+        
+        $xmlraw = [xml](Get-Content $tempFile)
+        ForEach ($key in $keys) {
+            # Check for a namespaced element
+            if ($key.NamespaceUrl -And $key.NamespacePrefix) {
+                $ns = New-Object System.Xml.XmlNamespaceManager($xmlraw.NameTable)
+                $ns.AddNamespace($key.NamespacePrefix, $key.NamespaceUrl)
+                $node = $xmlraw.SelectSingleNode($key.KeyName, $ns)
+            } else {
+                $node = $xmlraw.SelectSingleNode($key.KeyName)
             }
-            catch {
-                Write-Error "Failure while updating $($key.Attribute) of $($key.KeyName): $($key.Value)"
+        
+            if ($node) {
+                try {
+                    Write-Host "Updating $($key.Attribute) of $($key.KeyName): $($key.Value)"
+                    $node.($key.Attribute) = $key.Value
+                }
+                catch {
+                    Write-Error "Failure while updating $($key.Attribute) of $($key.KeyName): $($key.Value)"
+                }
             }
         }
+        $xmlraw.Save($tempFile)
     }
-    $xmlraw.Save($tempFile)
 }
+
+# 
 
 <#
   Step 2:- For each token in the source configuration that matches with the regular expression __<tokenname>__
@@ -111,8 +120,10 @@ ForEach ($match in $matches) {
           Write-Verbose "Found custom variable '$matchedItem' in build or release definition with value '$variableValue'" 
       }
       else {
-          if ($Configuration.$environmentName.CustomVariables.$matchedItem) {
-              $variableValue = $Configuration.$environmentName.CustomVariables.$matchedItem
+          # Select the variable value defined in the current environment. Fall back to the value defined in the default environment if the current environment doesn't define it.
+          $environmentVariableValue = $environmentNames | foreach { $Configuration.$_.CustomVariables.$matchedItem } | where { $_ } | select -Last 1 
+          if ($environmentVariableValue) {
+              $variableValue = $environmentVariableValue
               Write-Verbose "Found variable '$matchedItem' in configuration with value '$variableValue" 
           }
           else {
