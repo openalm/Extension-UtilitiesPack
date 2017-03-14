@@ -72,18 +72,21 @@ if (($SourceIsXml) -and ($Configuration)) {
         if ($key.NamespaceUrl -And $key.NamespacePrefix) {
             $ns = New-Object System.Xml.XmlNamespaceManager($xmlraw.NameTable)
             $ns.AddNamespace($key.NamespacePrefix, $key.NamespaceUrl)
-            $node = $xmlraw.SelectSingleNode($key.KeyName, $ns)
+            $nodes = $xmlraw.SelectNodes($key.KeyName, $ns)
         } else {
-            $node = $xmlraw.SelectSingleNode($key.KeyName)
+            $nodes = $xmlraw.SelectNodes($key.KeyName)
         }
 
-        if ($node) {
-            try {
-                Write-Host "Updating $($key.Attribute) of $($key.KeyName): $($key.Value)"
-                $node.($key.Attribute) = $key.Value
-            }
-            catch {
-                Write-Error "Failure while updating $($key.Attribute) of $($key.KeyName): $($key.Value)"
+        if ($nodes) {
+            foreach ($node in $nodes) {
+                try {
+                    Write-Host "Updating $($key.Attribute) of $($key.KeyName): $($key.Value)"
+                    $node.($key.Attribute) = $key.Value
+                    Write-Host "Updated $($key.Attribute) of $($key.KeyName): $($key.Value)"
+                }
+                catch {
+                    Write-Error "Failure while updating $($key.Attribute) of $($key.KeyName): $($key.Value)"
+                }
             }
         }
     }
