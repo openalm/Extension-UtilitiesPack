@@ -100,6 +100,7 @@ Describe "Not set variables should not get replaced" {
         
         $env:INPUT_SOURCEPATH = $srcPath = Join-Path $env:TEMP 'source.txt'
         $env:INPUT_DESTINATIONPATH = $destPath = Join-Path $env:TEMP 'dest.txt'
+        $env:INPUT_REPLACEUNDEFINEDVALUESWITHEMPTY = $false
         $fooVal = "的I am foo的"
         $barVal = "的I am bar的"
         $secretVal = "I am secret"
