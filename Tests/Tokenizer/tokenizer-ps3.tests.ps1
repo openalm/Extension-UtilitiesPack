@@ -68,6 +68,127 @@ Describe "Replace token variables" {
     }
 }
 
+Describe "Replace token variables" {
+	It "does not escape special characters in text files"{
+        
+        $env:INPUT_SOURCEPATH = $srcPath = Join-Path $env:TEMP 'source.txt'
+        $env:INPUT_DESTINATIONPATH = $destPath = Join-Path $env:TEMP 'dest.txt'
+        $env:INPUT_CONFIGURATIONJSONFILE = $jsonConfigPath = Join-Path $env:TEMP 'config.json'
+        $env:RELEASE_ENVIRONMENTNAME = 'Test'
+        $foo1val = 'I am foo1'
+        $bar1val = 'I am bar1'
+        $foobarVal = 'FOO - & BAR'
+        $jsonConfigContent = @{
+            Test=@{
+                CustomVariables = @{
+                    "foo1" = $foo1val
+                    "bar1" = $bar1val
+                    "foo_bar" = $foobarVal
+                }
+            }
+        } | ConvertTo-Json
+        
+        $sourceContent = '__foo1__ __bar1__ __foo_bar__ __foo.bar__'
+        $expectedDestinationContent = $foo1val + " " + $bar1val + " " + $foobarVal + " " + $foobarVal
+                
+        try {
+            Set-Content -Value $sourceContent -Path $srcPath
+            Set-Content -Value $jsonConfigContent -Path $jsonConfigPath
+            Invoke-VstsTaskScript -ScriptBlock { . $scriptPath } 
+            Get-Content -Path $destPath | Should Be $expectedDestinationContent    
+        }
+        finally {
+            Remove-Item -Path $srcPath
+            Remove-Item -Path $destPath
+            Remove-Item -Path $jsonConfigPath
+        }
+    }
+}
+
+Describe "XML Selection"{
+	It "finds nodes through XPath"{
+        
+        $env:INPUT_SOURCEPATH = $srcPath = Join-Path $env:TEMP 'source.xml'
+        $env:INPUT_DESTINATIONPATH = $destPath = Join-Path $env:TEMP 'dest.xml'
+        $env:INPUT_CONFIGURATIONJSONFILE = $jsonConfigPath = Join-Path $env:TEMP 'config.json'
+        $env:RELEASE_ENVIRONMENTNAME = 'Test'
+		
+        $jsonConfigContent = '{
+    "Test":  {
+                 "ConfigChanges":  [
+                                       {
+										"value":  "I am replaced",
+										"Attribute":  "bar",
+										"KeyName":  "/configuration/foo[@key=''testExample'']"
+										}
+                                   ]
+             }
+}'
+        $sourceContent = '<?xml version="1.0" encoding="utf-8"?><configuration><foo key="testExample" bar="value to replace" /></configuration>'
+
+        $expectedDestinationContent = '<?xml version="1.0" encoding="utf-8"?><configuration><foo key="testExample" bar="I am replaced" /></configuration>'
+        		
+        try {
+			#cycling the expected through a write and read to normalize expected spacing
+			$tempPath = Join-Path $env:TEMP 'temp.xml'
+			Set-Content -Value $expectedDestinationContent -Path $tempPath
+			$expectedDestinationContent = [xml](Get-Content -Path $tempPath)
+		
+            Set-Content -Value $sourceContent -Path $srcPath
+            Set-Content -Value $jsonConfigContent -Path $jsonConfigPath
+            Invoke-VstsTaskScript -ScriptBlock { . $scriptPath } 
+            ([xml](Get-Content -Path $destPath)).OuterXML | Should Be $expectedDestinationContent.OuterXML
+        }
+        finally {
+            Remove-Item -Path $srcPath
+            Remove-Item -Path $destPath
+            Remove-Item -Path $jsonConfigPath
+        }
+    }
+}
+
+Describe "XML Selection Character Escape"{
+	It "does not escape special characters in XML files"{
+        $env:TEMP = 'C:\temp'
+        $env:INPUT_SOURCEPATH = $srcPath = Join-Path $env:TEMP 'source.xml'
+        $env:INPUT_DESTINATIONPATH = $destPath = Join-Path $env:TEMP 'dest.xml'
+        $env:INPUT_CONFIGURATIONJSONFILE = $jsonConfigPath = Join-Path $env:TEMP 'config.json'
+        $env:RELEASE_ENVIRONMENTNAME = 'Test'
+        $jsonConfigContent = '{
+    "Test":  {
+                 "ConfigChanges":  [
+                                       {
+										"value":  "I am replaced & happy",
+										"Attribute":  "bar",
+										"KeyName":  "/configuration/foo[@key=''testExample'']"
+										}
+                                   ]
+             }
+}'
+        $sourceContent = '<?xml version="1.0" encoding="utf-8"?><configuration><foo key="testExample" bar="value to replace" /></configuration>'
+
+        $expectedDestinationContent = '<?xml version="1.0" encoding="utf-8"?><configuration><foo key="testExample" bar="I am replaced & happy" /></configuration>'
+        
+        try {
+			#cycling the expected through a write and read to normalize expected spacing
+			$tempPath = Join-Path $env:TEMP 'temp.xml'
+			Set-Content -Value $expectedDestinationContent -Path $tempPath
+			$expectedDestinationContent = [xml](Get-Content -Path $tempPath)
+		
+            Set-Content -Value $sourceContent -Path $srcPath
+            Set-Content -Value $jsonConfigContent -Path $jsonConfigPath
+            Invoke-VstsTaskScript -ScriptBlock { . $scriptPath } 
+            ([xml](Get-Content -Path $destPath)).OuterXML | Should Be $expectedDestinationContent.OuterXML
+        }
+        finally {
+            #Remove-Item -Path $srcPath
+            #Remove-Item -Path $destPath
+            #Remove-Item -Path $jsonConfigPath
+			#Remove-Item -Path $tempPath
+        }
+    }
+}
+
 Describe "Encoding Test" {
     It "replaces multiple variables defined as env variables(configuration variables)"{
         
@@ -100,6 +221,7 @@ Describe "Not set variables should not get replaced" {
         
         $env:INPUT_SOURCEPATH = $srcPath = Join-Path $env:TEMP 'source.txt'
         $env:INPUT_DESTINATIONPATH = $destPath = Join-Path $env:TEMP 'dest.txt'
+		$env:INPUT_REPLACEUNDEFINEDVALUESWITHEMPTY = $false
         $fooVal = "的I am foo的"
         $barVal = "的I am bar的"
         $secretVal = "I am secret"
