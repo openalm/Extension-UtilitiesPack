@@ -158,7 +158,7 @@ Describe "XML Selection Character Escape"{
     "Test":  {
                  "ConfigChanges":  [
                                        {
-										"value":  "I am replaced & happy",
+										"value":  "I am replaced &quot;happy&quot;",
 										"Attribute":  "bar",
 										"KeyName":  "/configuration/foo[@key=''testExample'']"
 										}
@@ -167,7 +167,7 @@ Describe "XML Selection Character Escape"{
 }'
         $sourceContent = '<?xml version="1.0" encoding="utf-8"?><configuration><foo key="testExample" bar="value to replace" /></configuration>'
 
-        $expectedDestinationContent = '<?xml version="1.0" encoding="utf-8"?><configuration><foo key="testExample" bar="I am replaced & happy" /></configuration>'
+        $expectedDestinationContent = '<?xml version="1.0" encoding="utf-8"?><configuration><foo key="testExample" bar="I am replaced &quot;happy&quot;" /></configuration>'
         
         try {
 			#cycling the expected through a write and read to normalize expected spacing
