@@ -148,8 +148,7 @@ Describe "XML Selection"{
 }
 
 Describe "XML Selection Character Escape"{
-	It "does not escape special characters in XML files"{
-        $env:TEMP = 'C:\temp'
+	It "does escape special characters in XML files when escaped in value"{
         $env:INPUT_SOURCEPATH = $srcPath = Join-Path $env:TEMP 'source.xml'
         $env:INPUT_DESTINATIONPATH = $destPath = Join-Path $env:TEMP 'dest.xml'
         $env:INPUT_CONFIGURATIONJSONFILE = $jsonConfigPath = Join-Path $env:TEMP 'config.json'
@@ -158,7 +157,7 @@ Describe "XML Selection Character Escape"{
     "Test":  {
                  "ConfigChanges":  [
                                        {
-										"value":  "I am replaced &quot;happy&quot;",
+										"value":  "I am replaced & \"happy\"",
 										"Attribute":  "bar",
 										"KeyName":  "/configuration/foo[@key=''testExample'']"
 										}
@@ -167,7 +166,7 @@ Describe "XML Selection Character Escape"{
 }'
         $sourceContent = '<?xml version="1.0" encoding="utf-8"?><configuration><foo key="testExample" bar="value to replace" /></configuration>'
 
-        $expectedDestinationContent = '<?xml version="1.0" encoding="utf-8"?><configuration><foo key="testExample" bar="I am replaced &quot;happy&quot;" /></configuration>'
+        $expectedDestinationContent = '<?xml version="1.0" encoding="utf-8"?><configuration><foo key="testExample" bar="I am replaced &amp; &quot;happy&quot;" /></configuration>'
         
         try {
 			#cycling the expected through a write and read to normalize expected spacing
@@ -181,12 +180,54 @@ Describe "XML Selection Character Escape"{
             ([xml](Get-Content -Path $destPath)).OuterXML | Should Be $expectedDestinationContent.OuterXML
         }
         finally {
-            #Remove-Item -Path $srcPath
-            #Remove-Item -Path $destPath
-            #Remove-Item -Path $jsonConfigPath
-			#Remove-Item -Path $tempPath
+            Remove-Item -Path $srcPath
+            Remove-Item -Path $destPath
+            Remove-Item -Path $jsonConfigPath
+			Remove-Item -Path $tempPath
         }
     }
+	
+	It "may cause issues with pre-encoded strings"{
+		$env:INPUT_SOURCEPATH = $srcPath = Join-Path $env:TEMP 'source.xml'
+        $env:INPUT_DESTINATIONPATH = $destPath = Join-Path $env:TEMP 'dest.xml'
+        $env:INPUT_CONFIGURATIONJSONFILE = $jsonConfigPath = Join-Path $env:TEMP 'config.json'
+        $env:RELEASE_ENVIRONMENTNAME = 'Test'
+        $jsonConfigContent = '{
+    "Test":  {
+                 "ConfigChanges":  [
+                                       {
+										"value":  "I am replaced & &quot;happy&quot;",
+										"Attribute":  "bar",
+										"KeyName":  "/configuration/foo[@key=''testExample'']"
+										}
+                                   ]
+             }
+}'
+        $sourceContent = '<?xml version="1.0" encoding="utf-8"?><configuration><foo key="testExample" bar="value to replace" /></configuration>'
+		
+		#desired string
+        $expectedDestinationContent = '<?xml version="1.0" encoding="utf-8"?><configuration><foo key="testExample" bar="I am replaced &amp; &quot;happy&quot;" /></configuration>'
+		#actual string
+        $expectedDestinationContent = '<?xml version="1.0" encoding="utf-8"?><configuration><foo key="testExample" bar="I am replaced &amp; &amp;quot;happy&amp;quot;" /></configuration>'
+		
+        try {
+			#cycling the expected through a write and read to normalize expected spacing
+			$tempPath = Join-Path $env:TEMP 'temp.xml'
+			Set-Content -Value $expectedDestinationContent -Path $tempPath
+			$expectedDestinationContent = [xml](Get-Content -Path $tempPath)
+		
+            Set-Content -Value $sourceContent -Path $srcPath
+            Set-Content -Value $jsonConfigContent -Path $jsonConfigPath
+            Invoke-VstsTaskScript -ScriptBlock { . $scriptPath } 
+            ([xml](Get-Content -Path $destPath)).OuterXML | Should Be $expectedDestinationContent.OuterXML
+        }
+        finally {
+            Remove-Item -Path $srcPath
+            Remove-Item -Path $destPath
+            Remove-Item -Path $jsonConfigPath
+			Remove-Item -Path $tempPath
+        }
+	}
 }
 
 Describe "Encoding Test" {
