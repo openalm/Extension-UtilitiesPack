@@ -8,7 +8,7 @@ Release Management utility tasks
 5. **Powershell to rollback** 
 
 ## Details
-###Tokenizer
+### Tokenizer
 The task is used to tokenize environment specific configuration: 
 #### Tokenization based pattern replacement
 This task finds the pattern `__<pattern>__` and replaces the same with the value from the variable with name `<pattern>`. Eg. If you have a variable defined as `foo` with value `bar`, on running this task on a file that contains `__foo__` will be changed to `bar`. The latest version supports replacing secret variables.
@@ -76,13 +76,13 @@ Below is the list of inputs for the task:
 Refer above for the schema/format of the Json filename. If this parameter is not specified, then custom variables mentioned against the build/release are used to replace the tokens that match the regular expression `__<variable-name>__`
 
 
-###PowerShell++
+### PowerShell++
 This task lets you write your powershell script inline in the task textbox itself.  
-###Shell++
+### Shell++
 This task lets you write your powershell script inline in the task textbox itself.  
-###Zip & Unzip
+### Zip & Unzip
 This task lets you create zip files and Unzip archives on a windows agent.  
-###Rollback
+### Rollback
 The task is used to enable execution of rollback scripts for the environments. In case of rollback, you would need to know which of the tasks were executed successfully and which of the tasks failed. You would need to undo/fix the changes made to the environment by those tasks only.
 Release does not have pre-defined variables that indicate the status of the tasks executed in the job. That makes using an intelligent rollback script difficult. Rollback task facilitates exactly that. You can author a powershell script for reverting/ fixing the changes done to your environment by the deployment. 
 
