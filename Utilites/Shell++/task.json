@@ -82,6 +82,10 @@
         "label": "Script",
         "defaultValue": "echo 'Hello World'",
         "required": true,
+        "properties": {
+ +        "resizable": true,
+ +        "rows": "20"
+ +      },
         "helpMarkDown": "Write your scripts and have fun",
         "visibleRule": "type = InlineScript"
       }
