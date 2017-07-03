@@ -67,6 +67,118 @@ Describe "Replace token variables" {
         }
     }
 }
+    
+Describe "Replace token variables" {
+    It "uses or replaces default variables defined in json"{
+        
+        $env:INPUT_SOURCEPATH = $srcPath = Join-Path $env:TEMP 'source.txt'
+        $env:INPUT_DESTINATIONPATH = $destPath = Join-Path $env:TEMP 'dest.txt'
+        $env:INPUT_CONFIGURATIONJSONFILE = $jsonConfigPath = Join-Path $env:TEMP 'config.json'
+        $env:RELEASE_ENVIRONMENTNAME = 'Test'
+        $fooDefaultVal = 'foo-default'
+        $barTestVal = 'bar-test'
+        $barProdVal = 'bar-prod'
+        $foobarDefaultVal = 'foobar-default'
+        $foobarTestVal = 'foobar-test'
+        $foobarProdVal = 'foobar-prod'
+        $jsonConfigContent = @{
+            default=@{
+                CustomVariables = @{
+                    "foo2" = $fooDefaultVal
+                    "foo_bar2" = $foobarDefaultVal
+                }
+            }
+            Test=@{
+                CustomVariables = @{
+                    "bar2" = $barTestVal
+                    "foo_bar2" = $foobarTestVal
+                }
+            }
+            Prod=@{
+                CustomVariables = @{
+                    "bar2" = $barProdVal
+                    "foo_bar2" = $foobarProdVal
+                }
+            }
+        } | ConvertTo-Json
+        
+        $sourceContent = '__foo2__ __bar2__ __foo_bar2__ __foo.bar2__'
+        $expectedDestinationContent = $fooDefaultVal + " " + $barTestVal + " " + $foobarTestVal + " " + $foobarTestVal
+        
+        try {
+            Set-Content -Value $sourceContent -Path $srcPath
+            Set-Content -Value $jsonConfigContent -Path $jsonConfigPath
+            Invoke-VstsTaskScript -ScriptBlock { . $scriptPath }
+            Get-Content -Path $destPath | Should Be $expectedDestinationContent
+        }
+        finally {
+            Remove-Item -Path $srcPath
+            Remove-Item -Path $destPath
+            Remove-Item -Path $jsonConfigPath
+        }
+    }
+}
+
+Describe "Replace token variables" {
+    It "uses or replaces default config changes defined in json"{
+        
+        $env:INPUT_SOURCEPATH = $srcPath = Join-Path $env:TEMP 'source.xml'
+        $env:INPUT_DESTINATIONPATH = $destPath = Join-Path $env:TEMP 'dest.xml'
+        $env:INPUT_CONFIGURATIONJSONFILE = $jsonConfigPath = Join-Path $env:TEMP 'config.json'
+        $env:RELEASE_ENVIRONMENTNAME = 'Test'
+        $fooDefaultVal = 'foo-default'
+        $barTestVal = 'bar-test'
+        $foobarDefaultVal = 'foobar-default'
+        $foobarTestVal = 'foobar-test'
+        $configContent = @{
+            default=@{
+                ConfigChanges = @()
+            }
+            Test=@{
+                ConfigChanges = @()
+            }
+            Prod=@{
+                ConfigChanges = @()
+            }
+        }
+        $configContent.default.ConfigChanges += @{
+            "KeyName" = "/root/element"
+            "Attribute" = "attribute1"
+            "Value" = $fooDefaultVal
+        }
+        $configContent.default.ConfigChanges += @{
+            "KeyName" = "/root/element"
+            "Attribute" = "attribute3"
+            "Value" = $foobarDefaultVal
+        }
+        $configContent.Test.ConfigChanges += @{
+            "KeyName" = "/root/element"
+            "Attribute" = "attribute3"
+            "Value" = $foobarTestVal
+        }
+        $configContent.Test.ConfigChanges += @{
+            "KeyName" = "/root/element"
+            "Attribute" = "attribute2"
+            "Value" = $barTestVal
+        }
+        
+        $jsonConfigContent = $configContent | ConvertTo-Json -Depth 3
+        $sourceContent = '<?xml version="1.0" encoding="utf-8"?><root><element attribute1="value1" attribute2="bar-test" attribute3="foobar-test" /></root>'
+        $expectedDestinationContent = "<?xml version=`"1.0`" encoding=`"utf-8`"?>`r`n<root>`r`n  <element attribute1=`"" + $fooDefaultVal + "`" attribute2=`"" + $barTestVal + "`" attribute3=`"" + $foobarTestVal + "`" />`r`n</root>`r`n"
+        
+        try {
+            Set-Content -Value $sourceContent -Path $srcPath
+            Set-Content -Value $jsonConfigContent -Path $jsonConfigPath
+            Invoke-VstsTaskScript -ScriptBlock { . $scriptPath }
+            Get-Content -Path $destPath | Out-String | Should Be $expectedDestinationContent
+        }
+        finally {
+            Remove-Item -Path $srcPath
+            Remove-Item -Path $destPath
+            Remove-Item -Path $jsonConfigPath
+        }
+    }
+}
 
 Describe "Replace token variables" {
 	It "does not escape special characters in text files"{
@@ -262,7 +374,7 @@ Describe "Not set variables should not get replaced" {
         
         $env:INPUT_SOURCEPATH = $srcPath = Join-Path $env:TEMP 'source.txt'
         $env:INPUT_DESTINATIONPATH = $destPath = Join-Path $env:TEMP 'dest.txt'
-		$env:INPUT_REPLACEUNDEFINEDVALUESWITHEMPTY = $false
+        $env:INPUT_REPLACEUNDEFINEDVALUESWITHEMPTY = $false
         $fooVal = "的I am foo的"
         $barVal = "的I am bar的"
         $secretVal = "I am secret"

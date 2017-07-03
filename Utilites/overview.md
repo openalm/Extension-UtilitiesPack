@@ -18,28 +18,27 @@ A configuration Json document is provided as an input that contains a section Co
 Below is the sample for the Json document that can be provided as input. There can be multiple sections for each `<release environment name>`
 ```
 {
-  "<release environment name>": {
-    "CustomVariables": {
-    "Variable1": "value1",
-    "Variable2": "value2",
-  },
-    "ConfigChanges": [
-        {
-          "KeyName": "/configuration/appSettings/add[@key='ServiceURL']",
-          "Attribute":"value",
-          "Value":"https://ServiceURL"
+    "<release environment name>": {
+        "CustomVariables": {
+            "Variable1": "value1",
+            "Variable2": "value2"
+        },
+        "ConfigChanges": [{
+            "KeyName": "/configuration/appSettings/add[@key='ServiceURL']",
+            "Attribute": "value",
+            "Value": "https://ServiceURL"
         },
         {
-          "KeyName": "/configuration/appSettings/add[@key='EnableDebugging']",
-          "Attribute":"value",
-          "Value":"false"
+            "KeyName": "/configuration/appSettings/add[@key='EnableDebugging']",
+            "Attribute": "value",
+            "Value": "false"
         },
         {
-          "KeyName":“/configuration/connectionStrings/add[@name='databaseentities']”,
-          "Attribute": "connectionString",
-          "value": "Integrated Security=True;Persist Security Info=False;Initial Catalog=DB;Data Source=servername"
-        }
-    ]
+            "KeyName": "/configuration/connectionStrings/add[@name='databaseentities']",
+            "Attribute": "connectionString",
+            "value": "Integrated Security=True;Persist Security Info=False;Initial Catalog=DB;Data Source=servername"
+        }]
+    }
 }
 ```
 
@@ -63,6 +62,42 @@ Or specify the namespace URL and prefix in the config, e.g.
         "NamespaceUrl": "http://www.nlog-project.org/schemas/NLog.xsd",
         "NamespacePrefix": "ns"
     }
+```
+
+#### (Optional) Default variables and config changes
+
+To prevent you from having to define variables and config changes for each environment a special **"default"-environment** can be used in the configuration JSON file. Variables and config changes defined in this special environment will be used in every environment that doesn't explicitly overwrite them.
+
+```
+{
+    "default": {
+        "CustomVariables": {
+            "Variable1": "this value is valid in all environments",
+            "ServiceURL": "https://DefaultServiceURL"
+        },
+        "ConfigChanges": [{
+            "KeyName": "/configuration/appSettings/add[@key='ServiceURL']",
+            "Attribute": "value",
+            "Value": "__ServiceURL__"
+        },
+        {
+            "KeyName": "/configuration/appSettings/add[@key='EnableDebugging']",
+            "Attribute": "value",
+            "Value": "true"
+        }]
+    },
+    "test": {},
+    "prod": {
+        "CustomVariables": {
+            "ServiceURL": "https://ProdServiceURL"
+        },
+        "ConfigChanges": [{
+            "KeyName": "/configuration/appSettings/add[@key='EnableDebugging']",
+            "Attribute": "value",
+            "Value": "false"
+        }]
+    }
+}
 ```
 
 #### Parameters
