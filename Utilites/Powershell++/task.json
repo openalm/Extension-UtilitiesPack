@@ -73,6 +73,10 @@
       "label": "Script",
       "defaultValue": "Write-Host 'Hello World'",
       "required": true,
+      "properties": {
+        "resizable": true,
+        "rows": "20"
+      },
       "helpMarkDown": "Write your scripts and have fun",
       "visibleRule": "type = InlineScript"
     }
