@@ -11,12 +11,11 @@ Release Management utility tasks
 ### Tokenizer
 The task is used to tokenize environment specific configuration: 
 #### Tokenization based pattern replacement
-This task finds the pattern `__<pattern>__` and replaces the same with the value from the variable with name `<pattern>`. Eg. If you have a variable defined as `foo` with value `bar`, on running this task on a file that contains `__foo__` will be changed to `bar`. The latest version supports replacing secret variables.
+This task finds the pattern `__<pattern>__` and replaces it with the value from the variable with name `<pattern>`. E.g. If you have a variable defined as `foo` with value `bar`, when running this task on a file that contains `__foo__`, it will be changed to `bar`. The latest version supports replacing secret variables.
 #### (Optional) Tokenization based on XML / XPath
 If **Configuration Json filename** is provided (optional):
 A configuration Json document is provided as an input that contains a section ConfigChanges to provide KeyName the XPath to identify a particular node in the XML document, Attribute name that needs to be set and Value to be set. And this configuration can be maintained for multiple environments.
-Below is the sample for the Json document that can be provided as input. There can be multiple sections for each `<release environment name>`
-```
+Below is the sample for the Json document that can be provided as input. There can be multiple sections for each `<release environment name>`. The `<release environment name>` must match the VSTS Release Management Environment, as that is how the task determines which environment section in the Json file to use for the token replacement.
 {
     "<release environment name>": {
         "CustomVariables": {
