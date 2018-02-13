@@ -6,7 +6,7 @@
   "author": "ms-devlabs",
   "helpMarkDown": "[More Information](https://github.com/openalm/Extension-UtilitiesPack)",
   "category": "Utility",
-  "deprecated": true
+  "deprecated": true,
   "visibility": [
     "Build",
     "Release"
