@@ -1,11 +1,12 @@
 {
   "id": "4c073640-a478-11e5-a7e5-850fa42c7a74",
   "name": "Powershell++",
-  "friendlyName": "Powershell++",
+  "friendlyName": "Powershell++ ( deprecated ), use Powershell v2 task",
   "description": "Run a PowerShell script or Write your own",
   "author": "ms-devlabs",
   "helpMarkDown": "[More Information](https://github.com/openalm/Extension-UtilitiesPack)",
   "category": "Utility",
+  "deprecated": true
   "visibility": [
     "Build",
     "Release"
@@ -15,7 +16,7 @@
     ],
   "version": {
     "Major": "0",
-    "Minor": "2",
+    "Minor": "3",
     "Patch": "0"
   },
   "minimumAgentVersion": "1.83.0",
