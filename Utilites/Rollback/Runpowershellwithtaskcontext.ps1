@@ -15,7 +15,7 @@ Write-Verbose -Verbose "inlineScripe = $script"
 import-module "Microsoft.TeamFoundation.DistributedTask.Task.Common"
 
 # Construct the REST URL to obtain Build ID
-$releasequeryuri = "$($env:SYSTEM_TEAMFOUNDATIONSERVERURI)$($env:SYSTEM_TEAMPROJECT)/_apis/release/releases/$($env:Release_ReleaseId)/environments/$($env:RELEASE_ENVIRONMENTURI.Split('/')[-1])/tasks?api-version=2.1-preview.1"
+$releasequeryuri = "$($env:SYSTEM_TEAMFOUNDATIONSERVERURI)$($env:SYSTEM_TEAMPROJECT)/_apis/release/releases/$($env:Release_ReleaseId)/environments/$($env:RELEASE_ENVIRONMENTURI.Split('/')[-1])/tasks?attemptId=$($env:Release_AttemptNumber)&api-version=2.2-preview.1"
 $taskexecutioninfo = @{}
 $releasequeryresult = $null
 $personalAccessToken = $null
