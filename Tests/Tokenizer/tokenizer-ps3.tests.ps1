@@ -1,11 +1,12 @@
 ﻿$root = Split-Path -Parent $MyInvocation.MyCommand.Path | Split-Path | Split-Path
 $scriptPath = Join-Path $root "\Utilites\Tokenizer\tokenize-ps3.ps1"
 
-Import-Module (Join-Path $root "\Utilites\Tokenizer\ps_modules\VstsTaskSdk") -ArgumentList @{ NonInteractive = $true }
+Import-Module (Join-Path $root "\Utilites\Tokenizer\ps_modules\VstsTaskSdk") -ArgumentList @{ NonInteractive = $true } -Force
 
 Describe "Replace token variables" {
     It "replaces multiple variables defined as env variables(configuration variables)"{
         
+        $env:BUILD_SOURCESDIRECTORY = $fullDir = $env:TEMP
         $env:INPUT_SOURCEPATH = $srcPath = Join-Path $env:TEMP 'source.txt'
         $env:INPUT_DESTINATIONPATH = $destPath = Join-Path $env:TEMP 'dest.txt'
         $fooVal = "I am foo"
@@ -30,10 +31,10 @@ Describe "Replace token variables" {
     }
 }
 
-
 Describe "Replace token variables" {
     It "replaces variables defined in json"{
         
+        $env:BUILD_SOURCESDIRECTORY = $fullDir = $env:TEMP
         $env:INPUT_SOURCEPATH = $srcPath = Join-Path $env:TEMP 'source.txt'
         $env:INPUT_DESTINATIONPATH = $destPath = Join-Path $env:TEMP 'dest.txt'
         $env:INPUT_CONFIGURATIONJSONFILE = $jsonConfigPath = Join-Path $env:TEMP 'config.json'
@@ -71,6 +72,7 @@ Describe "Replace token variables" {
 Describe "Replace token variables" {
     It "uses or replaces default variables defined in json"{
         
+        $env:BUILD_SOURCESDIRECTORY = $fullDir = $env:TEMP
         $env:INPUT_SOURCEPATH = $srcPath = Join-Path $env:TEMP 'source.txt'
         $env:INPUT_DESTINATIONPATH = $destPath = Join-Path $env:TEMP 'dest.txt'
         $env:INPUT_CONFIGURATIONJSONFILE = $jsonConfigPath = Join-Path $env:TEMP 'config.json'
@@ -122,6 +124,7 @@ Describe "Replace token variables" {
 Describe "Replace token variables" {
     It "uses or replaces default config changes defined in json"{
         
+        $env:BUILD_SOURCESDIRECTORY = $fullDir = $env:TEMP
         $env:INPUT_SOURCEPATH = $srcPath = Join-Path $env:TEMP 'source.xml'
         $env:INPUT_DESTINATIONPATH = $destPath = Join-Path $env:TEMP 'dest.xml'
         $env:INPUT_CONFIGURATIONJSONFILE = $jsonConfigPath = Join-Path $env:TEMP 'config.json'
@@ -183,6 +186,7 @@ Describe "Replace token variables" {
 Describe "Replace token variables" {
 	It "does not escape special characters in text files"{
         
+        $env:BUILD_SOURCESDIRECTORY = $fullDir = $env:TEMP
         $env:INPUT_SOURCEPATH = $srcPath = Join-Path $env:TEMP 'source.txt'
         $env:INPUT_DESTINATIONPATH = $destPath = Join-Path $env:TEMP 'dest.txt'
         $env:INPUT_CONFIGURATIONJSONFILE = $jsonConfigPath = Join-Path $env:TEMP 'config.json'
@@ -220,6 +224,7 @@ Describe "Replace token variables" {
 Describe "XML Selection"{
 	It "finds nodes through XPath"{
         
+        $env:BUILD_SOURCESDIRECTORY = $fullDir = $env:TEMP
         $env:INPUT_SOURCEPATH = $srcPath = Join-Path $env:TEMP 'source.xml'
         $env:INPUT_DESTINATIONPATH = $destPath = Join-Path $env:TEMP 'dest.xml'
         $env:INPUT_CONFIGURATIONJSONFILE = $jsonConfigPath = Join-Path $env:TEMP 'config.json'
@@ -261,6 +266,7 @@ Describe "XML Selection"{
 
 Describe "XML Selection Character Escape"{
 	It "does escape special characters in XML files when escaped in value"{
+        $env:BUILD_SOURCESDIRECTORY = $fullDir = $env:TEMP
         $env:INPUT_SOURCEPATH = $srcPath = Join-Path $env:TEMP 'source.xml'
         $env:INPUT_DESTINATIONPATH = $destPath = Join-Path $env:TEMP 'dest.xml'
         $env:INPUT_CONFIGURATIONJSONFILE = $jsonConfigPath = Join-Path $env:TEMP 'config.json'
@@ -300,6 +306,7 @@ Describe "XML Selection Character Escape"{
     }
 	
 	It "may cause issues with pre-encoded strings"{
+        $env:BUILD_SOURCESDIRECTORY = $fullDir = $env:TEMP
 		$env:INPUT_SOURCEPATH = $srcPath = Join-Path $env:TEMP 'source.xml'
         $env:INPUT_DESTINATIONPATH = $destPath = Join-Path $env:TEMP 'dest.xml'
         $env:INPUT_CONFIGURATIONJSONFILE = $jsonConfigPath = Join-Path $env:TEMP 'config.json'
@@ -345,6 +352,7 @@ Describe "XML Selection Character Escape"{
 Describe "Encoding Test" {
     It "replaces multiple variables defined as env variables(configuration variables)"{
         
+        $env:BUILD_SOURCESDIRECTORY = $fullDir = $env:TEMP
         $env:INPUT_SOURCEPATH = $srcPath = Join-Path $env:TEMP 'source.txt'
         $env:INPUT_DESTINATIONPATH = $destPath = Join-Path $env:TEMP 'dest.txt'
         $fooVal = "的I am foo的"
@@ -372,6 +380,7 @@ Describe "Encoding Test" {
 Describe "Not set variables should not get replaced" {
     It "replaces multiple variables defined as env variables(configuration variables)"{
         
+        $env:BUILD_SOURCESDIRECTORY = $fullDir = $env:TEMP
         $env:INPUT_SOURCEPATH = $srcPath = Join-Path $env:TEMP 'source.txt'
         $env:INPUT_DESTINATIONPATH = $destPath = Join-Path $env:TEMP 'dest.txt'
         $env:INPUT_REPLACEUNDEFINEDVALUESWITHEMPTY = $false
@@ -400,6 +409,7 @@ Describe "Not set variables should not get replaced" {
 Describe "Not set variables should get replaced" {
     It "replaces multiple variables defined as env variables(configuration variables)"{
         
+        $env:BUILD_SOURCESDIRECTORY = $fullDir = $env:TEMP
         $env:INPUT_SOURCEPATH = $srcPath = Join-Path $env:TEMP 'source.txt'
         $env:INPUT_DESTINATIONPATH = $destPath = Join-Path $env:TEMP 'dest.txt'
         $env:INPUT_REPLACEUNDEFINEDVALUESWITHEMPTY = $true
@@ -415,12 +425,55 @@ Describe "Not set variables should get replaced" {
                 
         try {
             Set-Content -Value $sourceContent -Path $srcPath -Encoding "UTF8"
-            Invoke-VstsTaskScript -ScriptBlock { . $scriptPath } 
+            Invoke-VstsTaskScript -ScriptBlock { . $scriptPath }
             Get-Content -Path $destPath -Encoding "UTF8" | Should Be $expectedDestinationContent    
         }
         finally {
             Remove-Item -Path $srcPath
             Remove-Item -Path $destPath
         }
+    }
+}
+
+Describe "Glob Matches" {
+    $sourcesDir = "tokenizer-test"
+    $fullDir = Join-Path -Path (Get-Location) -ChildPath $sourcesDir
+    $sourceContent = '__foo__ __bar__ __secret__'
+    $srcPath1 = Join-Path $fullDir 'source1match.txt'
+    $srcPath2 = Join-Path $fullDir 'source2match.txt'
+    $srcPath3 = Join-Path $fullDir 'source3.txt'
+    $destPath = Join-Path $fullDir 'dest.txt'
+    
+    BeforeEach {
+        New-Item -Path . -Name "tokenizer-test" -ItemType "directory"
+        Set-Content -Value $sourceContent -Path $srcPath1
+        Set-Content -Value $sourceContent -Path $srcPath2
+        Set-Content -Value $sourceContent -Path $srcPath3
+    }
+
+    AfterEach {
+        if (Test-Path -Path $sourcesDir) {
+            Remove-Item -Path $sourcesDir -Recurse
+        }
+    }
+
+    It "replaces variables on multiple files" {
+        $env:BUILD_SOURCESDIRECTORY = $fullDir
+        $env:INPUT_SOURCEPATH = "**/*match.txt"
+        $env:INPUT_DESTINATIONPATH = $destPath
+        $fooVal = "I am foo"
+        $barVal = "I am bar"
+        $secretVal = "I am secret"
+        Set-VstsTaskVariable -Name foo -Value $fooVal
+        Set-VstsTaskVariable -Name bar -Value $barVal
+        Set-VstsTaskVariable -Name secret -Value $secretVal -Secret
+
+        Invoke-VstsTaskScript -ScriptBlock { . $scriptPath }
+
+        $expectedDestinationContent = $fooVal + " " + $barVal + " " + $secretVal
+        Get-Content -Path $srcPath1 | Should Be $expectedDestinationContent
+        Get-Content -Path $srcPath2 | Should Be $expectedDestinationContent
+        Get-Content -Path $srcPath3 | Should Be $sourceContent
+        Test-Path -Path $destPath | Should Be False
     }
 }

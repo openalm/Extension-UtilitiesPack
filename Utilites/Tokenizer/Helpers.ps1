@@ -8,7 +8,7 @@ if ((Test-Path -Path $xmlFilePath)){
     # Check for Load or Parse errors when loading the XML file
     $xml = New-Object System.Xml.XmlDocument
     try {
-        $xml.Load((Get-ChildItem -Path $xmlFilePath).FullName)
+        $xml.Load($xmlFilePath)
         return $true
     }
     catch [System.Xml.XmlException] {
