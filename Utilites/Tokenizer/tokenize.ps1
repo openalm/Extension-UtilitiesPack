@@ -71,25 +71,28 @@ if (($SourceIsXml) -and ($Configuration)) {
     
     ForEach ($environmentName in $environmentNames) {
         $keys = $Configuration.$environmentName.ConfigChanges
-        
+
         $xmlraw = [xml](Get-Content $tempFile)
         ForEach ($key in $keys) {
             # Check for a namespaced element
+            $ns = New-Object System.Xml.XmlNamespaceManager($xmlraw.NameTable)
             if ($key.NamespaceUrl -And $key.NamespacePrefix) {
-                $ns = New-Object System.Xml.XmlNamespaceManager($xmlraw.NameTable)
                 $ns.AddNamespace($key.NamespacePrefix, $key.NamespaceUrl)
-                $node = $xmlraw.SelectSingleNode($key.KeyName, $ns)
-            } else {
-                $node = $xmlraw.SelectSingleNode($key.KeyName)
             }
-        
-            if ($node) {
+            $nodes = $xmlraw.SelectNodes($key.KeyName, $ns)
+
+            if (!$nodes.Count) {
+                Write-Verbose "'$($key.KeyName)' not found in source"
+                continue
+            }
+            ForEach ($node in $nodes) {
+                $nodeXml = $node.OuterXml -replace $node.InnerXml
                 try {
-                    Write-Host "Updating $($key.Attribute) of $($key.KeyName): $($key.Value)"
-                    $node.($key.Attribute) = $key.Value
+                    Write-Host "Updating $($key.Attribute) of $($nodeXml): $($key.Value)"
+                    $node.SetAttribute(($key.Attribute), $key.Value)
                 }
                 catch {
-                    Write-Error "Failure while updating $($key.Attribute) of $($key.KeyName): $($key.Value)"
+                    Write-Error "Failure while updating $($key.Attribute) of $($nodeXml): $($key.Value)"
                 }
             }
         }

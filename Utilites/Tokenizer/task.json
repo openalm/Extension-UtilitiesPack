@@ -31,19 +31,19 @@
       "label": "Source filename",
       "defaultValue": "",
       "required": true,
-      "helpMarkDown": "Source file name that contains the tokens (__<variable-name>__). These patterns will be replaced with user-defined variables or from Configuration Json FileName. If it is an XML document, XPaths mentioned in the Configuration JsonFileName will be set as per environment"
+      "helpMarkDown": "Source file name that contains the tokens (__<variable-name>__). These patterns will be replaced with user-defined variables or from Configuration Json FileName. If it is an XML document, XPaths mentioned in the Configuration JsonFileName will be set as per environment.  Wildcards can be used.  For example, **/*.xml for all xml files in all sub folders."
     },
     {
       "name": "DestinationPath",
       "type": "string",
       "label": "Destination filename",
       "defaultValue": "",
-      "helpMarkDown": "The destination filename that has transformed Source filename. If this is empty, the 'Source filename' will be modified.",
+      "helpMarkDown": "The destination filename that has transformed Source filename. If this is empty or 'Source filename' matches more than one file, the source file will be modified.",
       "required": false
     },
     {
       "name": "ConfigurationJsonFile",
-      "type": "string",
+      "type": "filePath",
       "label": "Configuration Json filename",
       "defaultValue": "",
       "helpMarkDown": "Json file that contains environment specific settings in the form XPath, Attribute, Value and values for user-defined variables.",
