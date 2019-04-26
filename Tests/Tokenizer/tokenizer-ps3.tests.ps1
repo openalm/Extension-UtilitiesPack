@@ -31,322 +31,355 @@ Describe "Replace token variables" {
     }
 }
 
-Describe "Replace token variables" {
-    It "replaces variables defined in json"{
+# Describe "Replace token variables" {
+#     It "replaces variables defined in json"{
         
-        $env:BUILD_SOURCESDIRECTORY = $fullDir = $env:TEMP
-        $env:INPUT_SOURCEPATH = $srcPath = Join-Path $env:TEMP 'source.txt'
-        $env:INPUT_DESTINATIONPATH = $destPath = Join-Path $env:TEMP 'dest.txt'
-        $env:INPUT_CONFIGURATIONJSONFILE = $jsonConfigPath = Join-Path $env:TEMP 'config.json'
-        $env:RELEASE_ENVIRONMENTNAME = 'Test'
-        $foo1val = 'I am foo1'
-        $bar1val = 'I am bar1'
-        $foobarVal = 'FOO - BAR'
-        $jsonConfigContent = @{
-            Test=@{
-                CustomVariables = @{
-                    "foo1" = $foo1val
-                    "bar1" = $bar1val
-                    "foo_bar" = $foobarVal
-                }
-            }
-        } | ConvertTo-Json
+#         $env:BUILD_SOURCESDIRECTORY = $fullDir = $env:TEMP
+#         $env:INPUT_SOURCEPATH = $srcPath = Join-Path $env:TEMP 'source.txt'
+#         $env:INPUT_DESTINATIONPATH = $destPath = Join-Path $env:TEMP 'dest.txt'
+#         $env:INPUT_CONFIGURATIONJSONFILE = $jsonConfigPath = Join-Path $env:TEMP 'config.json'
+#         $env:RELEASE_ENVIRONMENTNAME = 'Test'
+#         $foo1val = 'I am foo1'
+#         $bar1val = 'I am bar1'
+#         $foobarVal = 'FOO - BAR'
+#         $jsonConfigContent = @{
+#             Test=@{
+#                 CustomVariables = @{
+#                     "foo1" = $foo1val
+#                     "bar1" = $bar1val
+#                     "foo_bar" = $foobarVal
+#                 }
+#             }
+#         } | ConvertTo-Json
         
-        $sourceContent = '__foo1__ __bar1__ __foo_bar__ __foo.bar__'
-        $expectedDestinationContent = $foo1val + " " + $bar1val + " " + $foobarVal + " " + $foobarVal
+#         $sourceContent = '__foo1__ __bar1__ __foo_bar__ __foo.bar__'
+#         $expectedDestinationContent = $foo1val + " " + $bar1val + " " + $foobarVal + " " + $foobarVal
                 
-        try {
-            Set-Content -Value $sourceContent -Path $srcPath
-            Set-Content -Value $jsonConfigContent -Path $jsonConfigPath
-            Invoke-VstsTaskScript -ScriptBlock { . $scriptPath } 
-            Get-Content -Path $destPath | Should Be $expectedDestinationContent    
-        }
-        finally {
-            Remove-Item -Path $srcPath
-            Remove-Item -Path $destPath
-            Remove-Item -Path $jsonConfigPath
-        }
-    }
-}
+#         try {
+#             Set-Content -Value $sourceContent -Path $srcPath
+#             Set-Content -Value $jsonConfigContent -Path $jsonConfigPath
+#             Invoke-VstsTaskScript -ScriptBlock { . $scriptPath } 
+#             Get-Content -Path $destPath | Should Be $expectedDestinationContent    
+#         }
+#         finally {
+#             Remove-Item -Path $srcPath
+#             Remove-Item -Path $destPath
+#             Remove-Item -Path $jsonConfigPath
+#         }
+#     }
+# }
     
-Describe "Replace token variables" {
-    It "uses or replaces default variables defined in json"{
+# Describe "Replace token variables" {
+#     It "uses or replaces default variables defined in json"{
         
-        $env:BUILD_SOURCESDIRECTORY = $fullDir = $env:TEMP
-        $env:INPUT_SOURCEPATH = $srcPath = Join-Path $env:TEMP 'source.txt'
-        $env:INPUT_DESTINATIONPATH = $destPath = Join-Path $env:TEMP 'dest.txt'
-        $env:INPUT_CONFIGURATIONJSONFILE = $jsonConfigPath = Join-Path $env:TEMP 'config.json'
-        $env:RELEASE_ENVIRONMENTNAME = 'Test'
-        $fooDefaultVal = 'foo-default'
-        $barTestVal = 'bar-test'
-        $barProdVal = 'bar-prod'
-        $foobarDefaultVal = 'foobar-default'
-        $foobarTestVal = 'foobar-test'
-        $foobarProdVal = 'foobar-prod'
-        $jsonConfigContent = @{
-            default=@{
-                CustomVariables = @{
-                    "foo2" = $fooDefaultVal
-                    "foo_bar2" = $foobarDefaultVal
-                }
-            }
-            Test=@{
-                CustomVariables = @{
-                    "bar2" = $barTestVal
-                    "foo_bar2" = $foobarTestVal
-                }
-            }
-            Prod=@{
-                CustomVariables = @{
-                    "bar2" = $barProdVal
-                    "foo_bar2" = $foobarProdVal
-                }
-            }
-        } | ConvertTo-Json
+#         $env:BUILD_SOURCESDIRECTORY = $fullDir = $env:TEMP
+#         $env:INPUT_SOURCEPATH = $srcPath = Join-Path $env:TEMP 'source.txt'
+#         $env:INPUT_DESTINATIONPATH = $destPath = Join-Path $env:TEMP 'dest.txt'
+#         $env:INPUT_CONFIGURATIONJSONFILE = $jsonConfigPath = Join-Path $env:TEMP 'config.json'
+#         $env:RELEASE_ENVIRONMENTNAME = 'Test'
+#         $fooDefaultVal = 'foo-default'
+#         $barTestVal = 'bar-test'
+#         $barProdVal = 'bar-prod'
+#         $foobarDefaultVal = 'foobar-default'
+#         $foobarTestVal = 'foobar-test'
+#         $foobarProdVal = 'foobar-prod'
+#         $jsonConfigContent = @{
+#             default=@{
+#                 CustomVariables = @{
+#                     "foo2" = $fooDefaultVal
+#                     "foo_bar2" = $foobarDefaultVal
+#                 }
+#             }
+#             Test=@{
+#                 CustomVariables = @{
+#                     "bar2" = $barTestVal
+#                     "foo_bar2" = $foobarTestVal
+#                 }
+#             }
+#             Prod=@{
+#                 CustomVariables = @{
+#                     "bar2" = $barProdVal
+#                     "foo_bar2" = $foobarProdVal
+#                 }
+#             }
+#         } | ConvertTo-Json
         
-        $sourceContent = '__foo2__ __bar2__ __foo_bar2__ __foo.bar2__'
-        $expectedDestinationContent = $fooDefaultVal + " " + $barTestVal + " " + $foobarTestVal + " " + $foobarTestVal
+#         $sourceContent = '__foo2__ __bar2__ __foo_bar2__ __foo.bar2__'
+#         $expectedDestinationContent = $fooDefaultVal + " " + $barTestVal + " " + $foobarTestVal + " " + $foobarTestVal
         
-        try {
-            Set-Content -Value $sourceContent -Path $srcPath
-            Set-Content -Value $jsonConfigContent -Path $jsonConfigPath
-            Invoke-VstsTaskScript -ScriptBlock { . $scriptPath }
-            Get-Content -Path $destPath | Should Be $expectedDestinationContent
-        }
-        finally {
-            Remove-Item -Path $srcPath
-            Remove-Item -Path $destPath
-            Remove-Item -Path $jsonConfigPath
-        }
-    }
-}
+#         try {
+#             Set-Content -Value $sourceContent -Path $srcPath
+#             Set-Content -Value $jsonConfigContent -Path $jsonConfigPath
+#             Invoke-VstsTaskScript -ScriptBlock { . $scriptPath }
+#             Get-Content -Path $destPath | Should Be $expectedDestinationContent
+#         }
+#         finally {
+#             Remove-Item -Path $srcPath
+#             Remove-Item -Path $destPath
+#             Remove-Item -Path $jsonConfigPath
+#         }
+#     }
+# }
 
-Describe "Replace token variables" {
-    It "uses or replaces default config changes defined in json"{
+# Describe "Replace token variables" {
+#     It "uses or replaces default config changes defined in json"{
         
-        $env:BUILD_SOURCESDIRECTORY = $fullDir = $env:TEMP
-        $env:INPUT_SOURCEPATH = $srcPath = Join-Path $env:TEMP 'source.xml'
-        $env:INPUT_DESTINATIONPATH = $destPath = Join-Path $env:TEMP 'dest.xml'
-        $env:INPUT_CONFIGURATIONJSONFILE = $jsonConfigPath = Join-Path $env:TEMP 'config.json'
-        $env:RELEASE_ENVIRONMENTNAME = 'Test'
-        $fooDefaultVal = 'foo-default'
-        $barTestVal = 'bar-test'
-        $foobarDefaultVal = 'foobar-default'
-        $foobarTestVal = 'foobar-test'
-        $configContent = @{
-            default=@{
-                ConfigChanges = @()
-            }
-            Test=@{
-                ConfigChanges = @()
-            }
-            Prod=@{
-                ConfigChanges = @()
-            }
-        }
-        $configContent.default.ConfigChanges += @{
-            "KeyName" = "/root/element"
-            "Attribute" = "attribute1"
-            "Value" = $fooDefaultVal
-        }
-        $configContent.default.ConfigChanges += @{
-            "KeyName" = "/root/element"
-            "Attribute" = "attribute3"
-            "Value" = $foobarDefaultVal
-        }
-        $configContent.Test.ConfigChanges += @{
-            "KeyName" = "/root/element"
-            "Attribute" = "attribute3"
-            "Value" = $foobarTestVal
-        }
-        $configContent.Test.ConfigChanges += @{
-            "KeyName" = "/root/element"
-            "Attribute" = "attribute2"
-            "Value" = $barTestVal
-        }
+#         $env:BUILD_SOURCESDIRECTORY = $fullDir = $env:TEMP
+#         $env:INPUT_SOURCEPATH = $srcPath = Join-Path $env:TEMP 'source.xml'
+#         $env:INPUT_DESTINATIONPATH = $destPath = Join-Path $env:TEMP 'dest.xml'
+#         $env:INPUT_CONFIGURATIONJSONFILE = $jsonConfigPath = Join-Path $env:TEMP 'config.json'
+#         $env:RELEASE_ENVIRONMENTNAME = 'Test'
+#         $fooDefaultVal = 'foo-default'
+#         $barTestVal = 'bar-test'
+#         $foobarDefaultVal = 'foobar-default'
+#         $foobarTestVal = 'foobar-test'
+#         $configContent = @{
+#             default=@{
+#                 ConfigChanges = @()
+#             }
+#             Test=@{
+#                 ConfigChanges = @()
+#             }
+#             Prod=@{
+#                 ConfigChanges = @()
+#             }
+#         }
+#         $configContent.default.ConfigChanges += @{
+#             "KeyName" = "/root/element"
+#             "Attribute" = "attribute1"
+#             "Value" = $fooDefaultVal
+#         }
+#         $configContent.default.ConfigChanges += @{
+#             "KeyName" = "/root/element"
+#             "Attribute" = "attribute3"
+#             "Value" = $foobarDefaultVal
+#         }
+#         $configContent.Test.ConfigChanges += @{
+#             "KeyName" = "/root/element"
+#             "Attribute" = "attribute3"
+#             "Value" = $foobarTestVal
+#         }
+#         $configContent.Test.ConfigChanges += @{
+#             "KeyName" = "/root/element"
+#             "Attribute" = "attribute2"
+#             "Value" = $barTestVal
+#         }
         
-        $jsonConfigContent = $configContent | ConvertTo-Json -Depth 3
-        $sourceContent = '<?xml version="1.0" encoding="utf-8"?><root><element attribute1="value1" attribute2="bar-test" attribute3="foobar-test" /></root>'
-        $expectedDestinationContent = "<?xml version=`"1.0`" encoding=`"utf-8`"?>`r`n<root>`r`n  <element attribute1=`"" + $fooDefaultVal + "`" attribute2=`"" + $barTestVal + "`" attribute3=`"" + $foobarTestVal + "`" />`r`n</root>`r`n"
+#         $jsonConfigContent = $configContent | ConvertTo-Json -Depth 3
+#         $sourceContent = '<?xml version="1.0" encoding="utf-8"?><root><element attribute1="value1" attribute2="bar-test" attribute3="foobar-test" /></root>'
+#         $expectedDestinationContent = "<?xml version=`"1.0`" encoding=`"utf-8`"?>`r`n<root>`r`n  <element attribute1=`"" + $fooDefaultVal + "`" attribute2=`"" + $barTestVal + "`" attribute3=`"" + $foobarTestVal + "`" />`r`n</root>`r`n"
         
-        try {
-            Set-Content -Value $sourceContent -Path $srcPath
-            Set-Content -Value $jsonConfigContent -Path $jsonConfigPath
-            Invoke-VstsTaskScript -ScriptBlock { . $scriptPath }
-            Get-Content -Path $destPath | Out-String | Should Be $expectedDestinationContent
-        }
-        finally {
-            Remove-Item -Path $srcPath
-            Remove-Item -Path $destPath
-            Remove-Item -Path $jsonConfigPath
-        }
-    }
-}
+#         try {
+#             Set-Content -Value $sourceContent -Path $srcPath
+#             Set-Content -Value $jsonConfigContent -Path $jsonConfigPath
+#             Invoke-VstsTaskScript -ScriptBlock { . $scriptPath }
+#             Get-Content -Path $destPath | Out-String | Should Be $expectedDestinationContent
+#         }
+#         finally {
+#             Remove-Item -Path $srcPath
+#             Remove-Item -Path $destPath
+#             Remove-Item -Path $jsonConfigPath
+#         }
+#     }
+# }
 
-Describe "Replace token variables" {
-	It "does not escape special characters in text files"{
+# Describe "Replace token variables" {
+# 	It "does not escape special characters in text files"{
         
-        $env:BUILD_SOURCESDIRECTORY = $fullDir = $env:TEMP
-        $env:INPUT_SOURCEPATH = $srcPath = Join-Path $env:TEMP 'source.txt'
-        $env:INPUT_DESTINATIONPATH = $destPath = Join-Path $env:TEMP 'dest.txt'
-        $env:INPUT_CONFIGURATIONJSONFILE = $jsonConfigPath = Join-Path $env:TEMP 'config.json'
-        $env:RELEASE_ENVIRONMENTNAME = 'Test'
-        $foo1val = 'I am foo1'
-        $bar1val = 'I am bar1'
-        $foobarVal = 'FOO - & BAR'
-        $jsonConfigContent = @{
-            Test=@{
-                CustomVariables = @{
-                    "foo1" = $foo1val
-                    "bar1" = $bar1val
-                    "foo_bar" = $foobarVal
-                }
-            }
-        } | ConvertTo-Json
+#         $env:BUILD_SOURCESDIRECTORY = $fullDir = $env:TEMP
+#         $env:INPUT_SOURCEPATH = $srcPath = Join-Path $env:TEMP 'source.txt'
+#         $env:INPUT_DESTINATIONPATH = $destPath = Join-Path $env:TEMP 'dest.txt'
+#         $env:INPUT_CONFIGURATIONJSONFILE = $jsonConfigPath = Join-Path $env:TEMP 'config.json'
+#         $env:RELEASE_ENVIRONMENTNAME = 'Test'
+#         $foo1val = 'I am foo1'
+#         $bar1val = 'I am bar1'
+#         $foobarVal = 'FOO - & BAR'
+#         $jsonConfigContent = @{
+#             Test=@{
+#                 CustomVariables = @{
+#                     "foo1" = $foo1val
+#                     "bar1" = $bar1val
+#                     "foo_bar" = $foobarVal
+#                 }
+#             }
+#         } | ConvertTo-Json
         
-        $sourceContent = '__foo1__ __bar1__ __foo_bar__ __foo.bar__'
-        $expectedDestinationContent = $foo1val + " " + $bar1val + " " + $foobarVal + " " + $foobarVal
+#         $sourceContent = '__foo1__ __bar1__ __foo_bar__ __foo.bar__'
+#         $expectedDestinationContent = $foo1val + " " + $bar1val + " " + $foobarVal + " " + $foobarVal
                 
-        try {
-            Set-Content -Value $sourceContent -Path $srcPath
-            Set-Content -Value $jsonConfigContent -Path $jsonConfigPath
-            Invoke-VstsTaskScript -ScriptBlock { . $scriptPath } 
-            Get-Content -Path $destPath | Should Be $expectedDestinationContent    
-        }
-        finally {
-            Remove-Item -Path $srcPath
-            Remove-Item -Path $destPath
-            Remove-Item -Path $jsonConfigPath
+#         try {
+#             Set-Content -Value $sourceContent -Path $srcPath
+#             Set-Content -Value $jsonConfigContent -Path $jsonConfigPath
+#             Invoke-VstsTaskScript -ScriptBlock { . $scriptPath } 
+#             Get-Content -Path $destPath | Should Be $expectedDestinationContent    
+#         }
+#         finally {
+#             Remove-Item -Path $srcPath
+#             Remove-Item -Path $destPath
+#             Remove-Item -Path $jsonConfigPath
+#         }
+#     }
+# }
+
+Describe "XML updates based on json configuration" {
+    $sourcesDir = "tokenizer-test"
+    $fullDir = Join-Path -Path (Get-Location) -ChildPath $sourcesDir
+    $srcPath = Join-Path $fullDir 'source.xml'
+    $destPath = Join-Path $fullDir 'dest.xml'
+    $jsonConfigPath = Join-Path $fullDir 'config.json'
+
+    BeforeEach {
+        $env:BUILD_SOURCESDIRECTORY = $fullDir
+        $env:INPUT_SOURCEPATH = $srcPath
+        $env:INPUT_DESTINATIONPATH = $destPath
+        $env:INPUT_CONFIGURATIONJSONFILE = $jsonConfigPath
+        $env:RELEASE_ENVIRONMENTNAME = 'Test'
+
+        New-Item -Path . -Name "tokenizer-test" -ItemType "directory"
+    }
+
+    AfterEach {
+        if (Test-Path -Path $sourcesDir) {
+            Remove-Item -Path $sourcesDir -Recurse
         }
     }
-}
 
-Describe "XML Selection"{
-	It "finds nodes through XPath"{
-        
-        $env:BUILD_SOURCESDIRECTORY = $fullDir = $env:TEMP
-        $env:INPUT_SOURCEPATH = $srcPath = Join-Path $env:TEMP 'source.xml'
-        $env:INPUT_DESTINATIONPATH = $destPath = Join-Path $env:TEMP 'dest.xml'
-        $env:INPUT_CONFIGURATIONJSONFILE = $jsonConfigPath = Join-Path $env:TEMP 'config.json'
-        $env:RELEASE_ENVIRONMENTNAME = 'Test'
-		
-        $jsonConfigContent = '{
-    "Test":  {
-                 "ConfigChanges":  [
-                                       {
-										"value":  "I am replaced",
-										"Attribute":  "bar",
-										"KeyName":  "/configuration/foo[@key=''testExample'']"
-										}
-                                   ]
-             }
-}'
+	It "replaces attribute value based on configuration" {
         $sourceContent = '<?xml version="1.0" encoding="utf-8"?><configuration><foo key="testExample" bar="value to replace" /></configuration>'
-
+        $jsonConfigContent =
+'{
+    "Test": {
+    "ConfigChanges":  [{
+            "value":  "I am replaced",
+            "Attribute":  "bar",
+            "KeyName":  "/configuration/foo[@key=''testExample'']"
+        }]
+    }
+}'
         $expectedDestinationContent = '<?xml version="1.0" encoding="utf-8"?><configuration><foo key="testExample" bar="I am replaced" /></configuration>'
         		
-        try {
-			#cycling the expected through a write and read to normalize expected spacing
-			$tempPath = Join-Path $env:TEMP 'temp.xml'
-			Set-Content -Value $expectedDestinationContent -Path $tempPath
-			$expectedDestinationContent = [xml](Get-Content -Path $tempPath)
-		
-            Set-Content -Value $sourceContent -Path $srcPath
-            Set-Content -Value $jsonConfigContent -Path $jsonConfigPath
-            Invoke-VstsTaskScript -ScriptBlock { . $scriptPath } 
-            ([xml](Get-Content -Path $destPath)).OuterXML | Should Be $expectedDestinationContent.OuterXML
-        }
-        finally {
-            Remove-Item -Path $srcPath
-            Remove-Item -Path $destPath
-            Remove-Item -Path $jsonConfigPath
-        }
-    }
-}
+        #cycling the expected through a write and read to normalize expected spacing
+        $tempPath = Join-Path $fullDir 'temp.xml'
+        Set-Content -Value $expectedDestinationContent -Path $tempPath
+        $expectedDestinationContent = [xml](Get-Content -Path $tempPath)
+    
+        Set-Content -Value $sourceContent -Path $srcPath
+        Set-Content -Value $jsonConfigContent -Path $jsonConfigPath
+        Invoke-VstsTaskScript -ScriptBlock { . $scriptPath }
 
-Describe "XML Selection Character Escape"{
-	It "does escape special characters in XML files when escaped in value"{
-        $env:BUILD_SOURCESDIRECTORY = $fullDir = $env:TEMP
-        $env:INPUT_SOURCEPATH = $srcPath = Join-Path $env:TEMP 'source.xml'
-        $env:INPUT_DESTINATIONPATH = $destPath = Join-Path $env:TEMP 'dest.xml'
-        $env:INPUT_CONFIGURATIONJSONFILE = $jsonConfigPath = Join-Path $env:TEMP 'config.json'
-        $env:RELEASE_ENVIRONMENTNAME = 'Test'
-        $jsonConfigContent = '{
-    "Test":  {
-                 "ConfigChanges":  [
-                                       {
-										"value":  "I am replaced & \"happy\"",
-										"Attribute":  "bar",
-										"KeyName":  "/configuration/foo[@key=''testExample'']"
-										}
-                                   ]
-             }
-}'
-        $sourceContent = '<?xml version="1.0" encoding="utf-8"?><configuration><foo key="testExample" bar="value to replace" /></configuration>'
-
-        $expectedDestinationContent = '<?xml version="1.0" encoding="utf-8"?><configuration><foo key="testExample" bar="I am replaced &amp; &quot;happy&quot;" /></configuration>'
-        
-        try {
-			#cycling the expected through a write and read to normalize expected spacing
-			$tempPath = Join-Path $env:TEMP 'temp.xml'
-			Set-Content -Value $expectedDestinationContent -Path $tempPath
-			$expectedDestinationContent = [xml](Get-Content -Path $tempPath)
-		
-            Set-Content -Value $sourceContent -Path $srcPath
-            Set-Content -Value $jsonConfigContent -Path $jsonConfigPath
-            Invoke-VstsTaskScript -ScriptBlock { . $scriptPath } 
-            ([xml](Get-Content -Path $destPath)).OuterXML | Should Be $expectedDestinationContent.OuterXML
-        }
-        finally {
-            Remove-Item -Path $srcPath
-            Remove-Item -Path $destPath
-            Remove-Item -Path $jsonConfigPath
-			Remove-Item -Path $tempPath
-        }
+        Test-Path -Path $destPath | Should Be True
+        ([xml](Get-Content -Path $destPath)).OuterXML | Should Be $expectedDestinationContent.OuterXML
     }
-	
-	It "may cause issues with pre-encoded strings"{
-        $env:BUILD_SOURCESDIRECTORY = $fullDir = $env:TEMP
-		$env:INPUT_SOURCEPATH = $srcPath = Join-Path $env:TEMP 'source.xml'
-        $env:INPUT_DESTINATIONPATH = $destPath = Join-Path $env:TEMP 'dest.xml'
-        $env:INPUT_CONFIGURATIONJSONFILE = $jsonConfigPath = Join-Path $env:TEMP 'config.json'
-        $env:RELEASE_ENVIRONMENTNAME = 'Test'
-        $jsonConfigContent = '{
-    "Test":  {
-                 "ConfigChanges":  [
-                                       {
-										"value":  "I am replaced & &quot;happy&quot;",
-										"Attribute":  "bar",
-										"KeyName":  "/configuration/foo[@key=''testExample'']"
-										}
-                                   ]
-             }
-}'
+
+	It "escapes special characters" {
         $sourceContent = '<?xml version="1.0" encoding="utf-8"?><configuration><foo key="testExample" bar="value to replace" /></configuration>'
-		
-		#desired string
+        $jsonConfigContent =
+'{
+    "Test": {
+    "ConfigChanges":  [{
+            "value":  "I am replaced & \"happy\"",
+            "Attribute":  "bar",
+            "KeyName":  "/configuration/foo[@key=''testExample'']"
+        }]
+    }
+}'
         $expectedDestinationContent = '<?xml version="1.0" encoding="utf-8"?><configuration><foo key="testExample" bar="I am replaced &amp; &quot;happy&quot;" /></configuration>'
-		#actual string
-        $expectedDestinationContent = '<?xml version="1.0" encoding="utf-8"?><configuration><foo key="testExample" bar="I am replaced &amp; &amp;quot;happy&amp;quot;" /></configuration>'
-		
-        try {
-			#cycling the expected through a write and read to normalize expected spacing
-			$tempPath = Join-Path $env:TEMP 'temp.xml'
-			Set-Content -Value $expectedDestinationContent -Path $tempPath
-			$expectedDestinationContent = [xml](Get-Content -Path $tempPath)
-		
-            Set-Content -Value $sourceContent -Path $srcPath
-            Set-Content -Value $jsonConfigContent -Path $jsonConfigPath
-            Invoke-VstsTaskScript -ScriptBlock { . $scriptPath } 
-            ([xml](Get-Content -Path $destPath)).OuterXML | Should Be $expectedDestinationContent.OuterXML
-        }
-        finally {
-            Remove-Item -Path $srcPath
-            Remove-Item -Path $destPath
-            Remove-Item -Path $jsonConfigPath
-			Remove-Item -Path $tempPath
-        }
-	}
+        		
+        #cycling the expected through a write and read to normalize expected spacing
+        $tempPath = Join-Path $fullDir 'temp.xml'
+        Set-Content -Value $expectedDestinationContent -Path $tempPath
+        $expectedDestinationContent = [xml](Get-Content -Path $tempPath)
+    
+        Set-Content -Value $sourceContent -Path $srcPath
+        Set-Content -Value $jsonConfigContent -Path $jsonConfigPath
+        Invoke-VstsTaskScript -ScriptBlock { . $scriptPath }
+
+        Test-Path -Path $destPath | Should Be True
+        ([xml](Get-Content -Path $destPath)).OuterXML | Should Be $expectedDestinationContent.OuterXML
+    }
+
+	It "adds missing attribute" {
+        $sourceContent = '<?xml version="1.0" encoding="utf-8"?><configuration><foo key="testExample" /></configuration>'
+        $jsonConfigContent =
+'{
+    "Test": {
+    "ConfigChanges":  [{
+            "value":  "I am replaced",
+            "Attribute":  "bar",
+            "KeyName":  "/configuration/foo[@key=''testExample'']"
+        }]
+    }
+}'
+        $expectedDestinationContent = '<?xml version="1.0" encoding="utf-8"?><configuration><foo key="testExample" bar="I am replaced" /></configuration>'
+        		
+        #cycling the expected through a write and read to normalize expected spacing
+        $tempPath = Join-Path $fullDir 'temp.xml'
+        Set-Content -Value $expectedDestinationContent -Path $tempPath
+        $expectedDestinationContent = [xml](Get-Content -Path $tempPath)
+    
+        Set-Content -Value $sourceContent -Path $srcPath
+        Set-Content -Value $jsonConfigContent -Path $jsonConfigPath
+        Invoke-VstsTaskScript -ScriptBlock { . $scriptPath }
+
+        Test-Path -Path $destPath | Should Be True
+        ([xml](Get-Content -Path $destPath)).OuterXML | Should Be $expectedDestinationContent.OuterXML
+    }
+
+	It "includes one namespace" {
+        $sourceContent = '<?xml version="1.0" encoding="utf-8"?><configuration xmlns:a="http://namespace"><a:foo key="testExample" bar="value to replace" /></configuration>'
+        $jsonConfigContent =
+'{
+    "Test": {
+    "ConfigChanges":  [{
+            "value":  "I am replaced",
+            "Attribute":  "bar",
+            "KeyName":  "/configuration/a:foo[@key=''testExample'']",
+            "NamespacePrefix": "a",
+            "NamespaceUrl": "http://namespace"
+        }]
+    }
+}'
+        $expectedDestinationContent = '<?xml version="1.0" encoding="utf-8"?><configuration xmlns:a="http://namespace"><a:foo key="testExample" bar="I am replaced" /></configuration>'
+        		
+        #cycling the expected through a write and read to normalize expected spacing
+        $tempPath = Join-Path $fullDir 'temp.xml'
+        Set-Content -Value $expectedDestinationContent -Path $tempPath
+        $expectedDestinationContent = [xml](Get-Content -Path $tempPath)
+    
+        Set-Content -Value $sourceContent -Path $srcPath
+        Set-Content -Value $jsonConfigContent -Path $jsonConfigPath
+        Invoke-VstsTaskScript -ScriptBlock { . $scriptPath }
+
+        Test-Path -Path $destPath | Should Be True
+        ([xml](Get-Content -Path $destPath)).OuterXML | Should Be $expectedDestinationContent.OuterXML
+    }
+
+    It "finds all nodes matching the XPath" {
+        $sourceContent = '<?xml version="1.0" encoding="utf-8"?><configuration><foo1 key="test" bar="value to replace" /><foo2 key="nomatch" bar="not replaced" /><foo3 key="test" bar="value to replace"><child /></foo3></configuration>'
+        $jsonConfigContent =
+'{
+    "Test": {
+    "ConfigChanges":  [{
+            "value":  "I am replaced",
+            "Attribute":  "bar",
+            "KeyName":  "/configuration/*[@key=''test'']"
+        }]
+    }
+}'
+        $expectedDestinationContent = '<?xml version="1.0" encoding="utf-8"?><configuration><foo1 key="test" bar="I am replaced" /><foo2 key="nomatch" bar="not replaced" /><foo3 key="test" bar="I am replaced"><child /></foo3></configuration>'
+        		
+        #cycling the expected through a write and read to normalize expected spacing
+        $tempPath = Join-Path $fullDir 'temp.xml'
+        Set-Content -Value $expectedDestinationContent -Path $tempPath
+        $expectedDestinationContent = [xml](Get-Content -Path $tempPath)
+    
+        Set-Content -Value $sourceContent -Path $srcPath
+        Set-Content -Value $jsonConfigContent -Path $jsonConfigPath
+        Invoke-VstsTaskScript -ScriptBlock { . $scriptPath }
+
+        Test-Path -Path $destPath | Should Be True
+        ([xml](Get-Content -Path $destPath)).OuterXML | Should Be $expectedDestinationContent.OuterXML
+    }
 }
 
 Describe "Encoding Test" {
