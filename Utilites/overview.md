@@ -128,7 +128,7 @@ This task lets you write your powershell script inline in the task textbox itsel
 
 ### Shell++
 
-This task lets you write your powershell script inline in the task textbox itself.
+This task lets you write your shell script inline in the task textbox itself.
 
 ### Zip & Unzip
 
