@@ -22,7 +22,7 @@ This task finds the pattern `__<pattern>__` and replaces it with the value from 
 
 If **Configuration Json filename** is provided (optional):
 A configuration Json document is provided as an input that contains a section ConfigChanges to provide KeyName the XPath to identify a particular node in the XML document, Attribute name that needs to be set and Value to be set. And this configuration can be maintained for multiple environments.
-Below is the sample for the Json document that can be provided as input. There can be multiple sections for each `<release environment name>`. The `<release environment name>` must match the VSTS Release Management Environment, as that is how the task determines which environment section in the Json file to use for the token replacement.
+Below is the sample for the Json document that can be provided as input. There can be multiple sections for each `<release environment name>`. The `<release environment name>` must match the Azure Pipelines Environment, as that is how the task determines which environment section in the Json file to use for the token replacement.
 
 ```json
 {
