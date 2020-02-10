@@ -16,7 +16,7 @@ The task is used to tokenize environment specific configuration:
 
 #### Tokenization based pattern replacement
 
-This task finds the pattern `__<pattern>__` and replaces it with the value from the variable with name `<pattern>`. E.g. If you have a variable defined as `foo` with value `bar`, when running this task on a file that contains `__foo__`, it will be changed to `bar`. The latest version supports replacing secret variables.
+This task finds the pattern `__pattern__` and replaces it with the value from the variable with name `pattern`. E.g. If you have a variable defined as `foo` with value `bar`, when running this task on a file, all `__foo__` in that file will be replaced with `bar`. The latest version supports replacing secret variables.
 
 #### (Optional) Tokenization based on XML / XPath
 
@@ -114,12 +114,12 @@ To prevent you from having to define variables and config changes for each envir
 
 Below is the list of inputs for the task:
 
-**Source filename*** - Source file name that contains the tokens (`__<variable-name>__`). These patterns will be replaced with user-defined variables or from Configuration Json FileName. If it is an XML document, XPaths mentioned in the Configuration JsonFileName will be set as per environment.
+**Source filename*** - Source file name that contains the tokens (`__variable-name__`). These patterns will be replaced with user-defined variables or from Configuration Json FileName. If it is an XML document, XPaths mentioned in the Configuration JsonFileName will be set as per environment.
 
 **Destination filename** (optional) - Destination filename that has transformed Source filename. If this is empty, the 'Source filename' will be modified.
 
 **Configuration Json filename** (optional) - Json file that contains environment specific settings in the form XPath, Attribute, Value and values for user-defined variables.
-Refer above for the schema/format of the Json filename. If this parameter is not specified, then custom variables mentioned against the build/release are used to replace the tokens that match the regular expression `__<variable-name>__`
+Refer above for the schema/format of the Json filename. If this parameter is not specified, then custom variables mentioned against the build/release are used to replace the tokens that match the regular expression `__variable-name__`
 
 
 ### PowerShell++
