@@ -18,7 +18,7 @@
     "Minor": "3",
     "Patch": "1"
   },
-  "minimumAgentVersion": "1.83.0",
+  "minimumAgentVersion": "2.144.0",
   "instanceNameFormat": "Shell Script",
   "groups": [
         {
@@ -92,6 +92,14 @@
   ],
   "execution": {
     "Node": {
+      "target": "task.js",
+      "argumentFormat": ""
+    },
+    "Node10": {
+      "target": "task.js",
+      "argumentFormat": ""
+    },
+    "Node16": {
       "target": "task.js",
       "argumentFormat": ""
     }
