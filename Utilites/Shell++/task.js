@@ -1,5 +1,5 @@
 var path = require('path');
-var tl = require('vso-task-lib');
+var tl = require('azue-pipelines-task-lib');
 var fs = require('fs');
 
 var echo = new tl.ToolRunner(tl.which('echo', true));
